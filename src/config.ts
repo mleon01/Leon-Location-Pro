@@ -3,30 +3,20 @@
 // ─────────────────────────────────────────────────────────────
 
 /**
- * Source des données du site :
- *  - "mock" : données de démonstration (fichiers JSON dans src/data/mock)
- *  - "odoo" : vraies données Odoo, via le Cloudflare Worker (phase 2)
+ * Source des données :
+ *  - "odoo" : vraies données Odoo, via le Cloudflare Worker (dossier /worker)
+ *  - "mock" : copie de démonstration du catalogue (src/data/mock), sans Odoo
  *
  * C'est LA variable à changer pour passer d'un mode à l'autre.
  * Elle peut aussi être définie au moment du build : VITE_DATA_SOURCE=odoo
  */
-export const DATA_SOURCE: 'mock' | 'odoo' =
-  (import.meta.env.VITE_DATA_SOURCE as 'mock' | 'odoo' | undefined) ?? 'mock'
+export const DATA_SOURCE: 'odoo' | 'mock' = (import.meta.env.VITE_DATA_SOURCE as 'odoo' | 'mock' | undefined) ?? 'odoo'
 
-/** Adresse du Cloudflare Worker (utilisée uniquement en mode "odoo") */
-export const WORKER_URL: string = import.meta.env.VITE_WORKER_URL ?? '/api'
+/** Adresse du Worker (en local : wrangler dev sur le port 8787) */
+export const WORKER_URL: string = import.meta.env.VITE_WORKER_URL ?? 'http://127.0.0.1:8787/api'
 
-/** Coordonnées affichées sur le site (provisoires) */
-export const COMPANY = {
-  name: 'LEON Location PRO',
-  slogan: 'Voyagez sans limite',
-  tagline: 'Qualité pro, service local',
-  phone: '0262 00 00 00',
-  phoneHref: 'tel:+262262000000',
-  whatsapp: 'https://wa.me/262692000000',
-  email: 'contact@exemple-leon-location.re',
-  address: 'La Réunion (974)',
+export const SOCIAL = {
   facebook: 'https://www.facebook.com/',
   instagram: 'https://www.instagram.com/',
-  cancellationHours: 24,
+  tiktok: 'https://www.tiktok.com/',
 }

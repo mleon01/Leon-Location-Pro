@@ -1,38 +1,32 @@
-// Implémentation "odoo" (phase 2) : toutes les requêtes passent par le
-// Cloudflare Worker, qui détient les clés API et parle à Odoo.
-// Le navigateur ne voit JAMAIS de clé : il appelle seulement WORKER_URL.
+// Mode "odoo" : toutes les requêtes passent par le Cloudflare Worker,
+// qui détient la clé API. Le navigateur ne voit jamais de clé.
 import { WORKER_URL } from '../config'
 import type { DataProvider } from './provider'
 
-async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${WORKER_URL}${path}`, {
-    ...init,
-    credentials: 'include', // nécessaire pour Cloudflare Access sur /admin
-    headers: { 'Content-Type': 'application/json', ...init?.headers },
-  })
-  if (!res.ok) {
-    const body = (await res.json().catch(() => null)) as { error?: string } | null
-    throw new Error(body?.error ?? `Erreur serveur (${res.status})`)
+async function api<T>(path: string, body?: unknown): Promise<T> {
+  let res: Response
+  try {
+    res = await fetch(`${WORKER_URL}${path}`, body === undefined ? undefined : {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  } catch {
+    throw new Error('Impossible de joindre le service de réservation. Vérifiez votre connexion.')
   }
-  return res.json() as Promise<T>
+  const json = (await res.json().catch(() => null)) as (T & { error?: string }) | null
+  if (!res.ok || !json) throw new Error(json?.error ?? `Erreur du service de réservation (${res.status})`)
+  return json
 }
-const post = <T>(path: string, body: unknown) => api<T>(path, { method: 'POST', body: JSON.stringify(body) })
+
+let catalogPromise: ReturnType<DataProvider['getCatalog']> | undefined
 
 export const odooProvider: DataProvider = {
-  getVehicles: () => api('/vehicles'),
-  getVehicle: (id) => api(`/vehicles/${encodeURIComponent(id)}`),
-  getLocations: () => api('/locations'),
-  getOptions: () => api('/options'),
-  getPricingRules: () => api('/pricing'),
-  searchAvailability: (query) => post('/availability', query),
-  getQuote: (query, vehicleId, options) => post('/quote', { query, vehicleId, options }),
-  // Crée un devis dans Odoo et renvoie l'URL du portail (paiement Stripe + signature)
-  createBooking: (request) => post('/bookings', request),
-  askAssistant: async (history) => (await post<{ reply: string }>('/assistant', { messages: history })).reply,
-
-  // Routes protégées par Cloudflare Access
-  getBookings: () => api('/admin/bookings'),
-  getBooking: (id) => api(`/admin/bookings/${encodeURIComponent(id)}`),
-  getCustomers: () => api('/admin/customers'),
-  getDashboardStats: () => api('/admin/dashboard'),
+  getCatalog: () => (catalogPromise ??= api<Awaited<ReturnType<DataProvider['getCatalog']>>>('/catalog').catch((e) => {
+    catalogPromise = undefined
+    throw e
+  })),
+  search: (start, end) => api(`/search?${new URLSearchParams({ start, end })}`),
+  quote: (start, end, lines) => api('/quote', { start, end, lines }),
+  checkout: (request) => api('/checkout', request),
 }

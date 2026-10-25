@@ -1,12 +1,18 @@
 import { Link } from 'react-router-dom'
 
+// Page 404, identique à celle du site Odoo
+// (les pages légales n'existent pas encore sur le site d'origine).
+
 export function NotFoundPage() {
   return (
-    <div className="container-page py-24 text-center">
-      <p className="font-display text-8xl text-brand-500">404</p>
-      <h1 className="font-display text-4xl">Cette route n’existe pas… encore</h1>
-      <p className="mt-2 text-slate-600">La page demandée est introuvable.</p>
-      <Link to="/" className="btn-primary mt-6">Retour à l’accueil</Link>
+    <div className="container-odoo py-20">
+      <h1 className="title-odoo text-center text-[clamp(3rem,8vw,6rem)] text-brand">Erreur 404</h1>
+      <p className="mt-4 text-center text-xl">Nous n'avons pas pu trouver la page que vous recherchez !</p>
+      <p className="mt-6 text-center text-muted">Pas de panique. Si vous pensez que c'est une erreur de notre part, veuillez nous envoyer un message à cette page.</p>
+      <p className="mt-6 text-center">Peut-être étiez-vous à la recherche d'une de ces pages populaires ?</p>
+      <p className="mt-2 text-center">
+        <Link to="/" className="text-brand-dark hover:text-brand">Accueil</Link>
+      </p>
     </div>
   )
 }

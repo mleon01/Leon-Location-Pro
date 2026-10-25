@@ -1,0 +1,199 @@
+{
+ "products": [
+  {
+   "id": 23,
+   "name": "Citadine",
+   "listPrice": 25,
+   "displayPrice": "25,00 € / Jour",
+   "featured": false,
+   "image": "https://leon-location-pro.odoo.com/web/image/product.template/23/image_1024",
+   "images": [],
+   "attributeName": "Modèle",
+   "variants": [
+    {
+     "id": 23,
+     "name": "Peugeot 208",
+     "displayName": "Citadine (Peugeot 208)",
+     "ptavIds": [
+      3
+     ],
+     "pickupHour": 0,
+     "returnHour": 0
+    },
+    {
+     "id": 24,
+     "name": "Renault Clio",
+     "displayName": "Citadine (Renault Clio)",
+     "ptavIds": [
+      4
+     ],
+     "pickupHour": 0,
+     "returnHour": 0
+    }
+   ],
+   "optionIds": [
+    15,
+    17,
+    16
+   ]
+  },
+  {
+   "id": 1,
+   "name": "SUV compact",
+   "listPrice": 35,
+   "displayPrice": "35,00 € / Jour",
+   "featured": true,
+   "image": "https://leon-location-pro.odoo.com/web/image/product.template/1/image_1024",
+   "images": [
+    "https://leon-location-pro.odoo.com/web/image/product.image/1/image_1024",
+    "https://leon-location-pro.odoo.com/web/image/product.image/2/image_1024",
+    "https://leon-location-pro.odoo.com/web/image/product.image/3/image_1024"
+   ],
+   "attributeName": "",
+   "variants": [
+    {
+     "id": 1,
+     "name": "",
+     "displayName": "SUV compact",
+     "ptavIds": [
+      2
+     ],
+     "pickupHour": 9,
+     "returnHour": 18
+    }
+   ],
+   "optionIds": [
+    15,
+    17,
+    16
+   ]
+  }
+ ],
+ "options": [
+  {
+   "id": 15,
+   "productId": 15,
+   "name": "Conducteur additionnel",
+   "price": 25,
+   "image": "https://leon-location-pro.odoo.com/web/image/product.template/15/image_256"
+  },
+  {
+   "id": 17,
+   "productId": 17,
+   "name": "Rehausseur (à partir de 3 ans)",
+   "price": 50,
+   "image": "https://leon-location-pro.odoo.com/web/image/product.template/17/image_256"
+  },
+  {
+   "id": 16,
+   "productId": 16,
+   "name": "Siège bébé (de 0 à 3 ans)",
+   "price": 50,
+   "image": "https://leon-location-pro.odoo.com/web/image/product.template/16/image_256"
+  }
+ ],
+ "tax": {
+  "rate": 8.5,
+  "label": "TVA 8,5%"
+ },
+ "forbiddenWeekdays": [],
+ "countries": [
+  {
+   "id": 20,
+   "name": "Belgium",
+   "code": "BE",
+   "phoneCode": 32
+  },
+  {
+   "id": 38,
+   "name": "Canada",
+   "code": "CA",
+   "phoneCode": 1
+  },
+  {
+   "id": 75,
+   "name": "France",
+   "code": "FR",
+   "phoneCode": 33
+  },
+  {
+   "id": 57,
+   "name": "Germany",
+   "code": "DE",
+   "phoneCode": 49
+  },
+  {
+   "id": 109,
+   "name": "Italy",
+   "code": "IT",
+   "phoneCode": 39
+  },
+  {
+   "id": 133,
+   "name": "Luxembourg",
+   "code": "LU",
+   "phoneCode": 352
+  },
+  {
+   "id": 141,
+   "name": "Madagascar",
+   "code": "MG",
+   "phoneCode": 261
+  },
+  {
+   "id": 153,
+   "name": "Mauritius",
+   "code": "MU",
+   "phoneCode": 230
+  },
+  {
+   "id": 246,
+   "name": "Mayotte",
+   "code": "YT",
+   "phoneCode": 262
+  },
+  {
+   "id": 165,
+   "name": "Netherlands",
+   "code": "NL",
+   "phoneCode": 31
+  },
+  {
+   "id": 183,
+   "name": "Portugal",
+   "code": "PT",
+   "phoneCode": 351
+  },
+  {
+   "id": 187,
+   "name": "Réunion",
+   "code": "RE",
+   "phoneCode": 262
+  },
+  {
+   "id": 68,
+   "name": "Spain",
+   "code": "ES",
+   "phoneCode": 34
+  },
+  {
+   "id": 43,
+   "name": "Switzerland",
+   "code": "CH",
+   "phoneCode": 41
+  },
+  {
+   "id": 231,
+   "name": "United Kingdom",
+   "code": "GB",
+   "phoneCode": 44
+  },
+  {
+   "id": 233,
+   "name": "United States",
+   "code": "US",
+   "phoneCode": 1
+  }
+ ],
+ "defaultCountryId": 75
+}

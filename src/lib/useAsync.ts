@@ -1,26 +1,24 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-/** Charge une donnée asynchrone (depuis le dataProvider) avec état de chargement et d'erreur. */
+/** Charge une donnée asynchrone avec état de chargement et d'erreur. */
 export function useAsync<T>(fn: () => Promise<T>, deps: unknown[] = []) {
-  const [data, setData] = useState<T>()
-  const [error, setError] = useState<string>()
-  const [loading, setLoading] = useState(true)
-  const [tick, setTick] = useState(0)
+  const [state, setState] = useState<{ data?: T; error?: string; loading: boolean }>({ loading: true })
 
   useEffect(() => {
     let alive = true
-    setLoading(true)
-    setError(undefined)
+    setState((s) => ({ data: s.data, loading: true }))
     fn()
-      .then((d) => alive && setData(d))
-      .catch((e: unknown) => alive && setError(e instanceof Error ? e.message : 'Erreur inconnue'))
-      .finally(() => alive && setLoading(false))
+      .then((data) => {
+        if (alive) setState({ data, loading: false })
+      })
+      .catch((e: unknown) => {
+        if (alive) setState({ error: e instanceof Error ? e.message : 'Erreur inconnue', loading: false })
+      })
     return () => {
       alive = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, tick])
+  }, deps)
 
-  const reload = useCallback(() => setTick((t) => t + 1), [])
-  return { data, error, loading, reload }
+  return state
 }

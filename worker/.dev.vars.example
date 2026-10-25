@@ -1,0 +1,7 @@
+# Copiez ce fichier en « .dev.vars » (même dossier) et remplissez les valeurs.
+# .dev.vars est ignoré par Git : vos secrets ne quittent jamais votre ordinateur.
+#
+# ODOO_LOGIN   : l'adresse e-mail de connexion du compte Odoo propriétaire de la clé
+# ODOO_API_KEY : Odoo → Mon profil → Sécurité du compte → Nouvelle clé API
+ODOO_LOGIN=votre-email@exemple.com
+ODOO_API_KEY=collez-ici-votre-cle-api

@@ -1,95 +1,52 @@
 @import 'tailwindcss';
 
-/* Identité LEON Location PRO — reprise du site Odoo, modernisée */
+/* Charte reprise à l'identique du site Odoo leon-location-pro.odoo.com */
 @theme {
   --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Bebas Neue', 'DM Sans', sans-serif;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
 
-  --color-brand-50: #e6f7ff;
-  --color-brand-100: #ccefff;
-  --color-brand-200: #99dfff;
-  --color-brand-300: #5cccff;
-  --color-brand-400: #24b8ff;
-  --color-brand-500: #00aaff;
-  --color-brand-600: #0088d1;
-  --color-brand-700: #006ba6;
-  --color-brand-800: #054f7a;
-
-  --color-accent-400: #ff6b78;
-  --color-accent-500: #e8192c;
-  --color-accent-600: #c41020;
+  --color-brand: #00aaff;
+  --color-brand-dark: #1d74c9;
+  --color-navlink: #84b6e7;
+  --color-alert: #e8192c;
 
   --color-ink-950: #0a0a0a;
   --color-ink-900: #0d0d0d;
-  --color-ink-800: #161616;
-  --color-ink-700: #1f242c;
-  --color-ink-600: #2a313e;
-
-  --color-paper: #f5f7fa;
+  --color-ink-850: #0f1318; /* sections « process » et « avantages » */
+  --color-ink-800: #161616; /* cartes, lignes produits */
+  --color-ink-750: #161a1f; /* calendrier */
+  --color-ink-700: #1b1f23; /* fond principal */
+  --color-ink-650: #212529; /* en-tête, FAQ */
+  --color-ink-600: #2d2d2d; /* champs de formulaire */
+  --color-ink-500: #2a313e;
+  --color-footer: #1b1319;
+  --color-muted: #c8c8c8;
 }
 
 @layer base {
   html {
     -webkit-tap-highlight-color: transparent;
-    scroll-behavior: smooth;
   }
   body {
-    @apply bg-paper text-ink-800 font-sans antialiased;
+    @apply bg-ink-700 font-sans text-base text-white antialiased;
   }
-  h1, h2, h3, .font-display {
-    letter-spacing: 0.02em;
-  }
-  :focus-visible {
-    outline: 2px solid var(--color-brand-500);
-    outline-offset: 2px;
+  button {
+    cursor: pointer;
   }
 }
 
-@utility container-page {
-  @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+@utility container-odoo {
+  @apply mx-auto w-full px-[15px];
+  max-width: 1140px;
 }
-@utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition
-    disabled:cursor-not-allowed disabled:opacity-50 active:scale-[0.98];
+@utility btn-odoo {
+  @apply inline-flex items-center justify-center rounded-[2px] bg-brand font-medium uppercase text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50;
 }
-@utility btn-primary {
-  @apply btn bg-brand-500 text-white shadow-lg shadow-brand-500/25 hover:bg-brand-600;
+@utility title-odoo {
+  @apply font-display leading-none;
+  font-weight: 500;
 }
-@utility btn-accent {
-  @apply btn bg-accent-500 text-white shadow-lg shadow-accent-500/25 hover:bg-accent-600;
-}
-@utility btn-ghost {
-  @apply btn border border-slate-200 bg-white text-ink-800 hover:border-brand-300 hover:text-brand-700;
-}
-@utility btn-dark {
-  @apply btn bg-ink-900 text-white hover:bg-ink-700;
-}
-@utility card {
-  @apply rounded-2xl border border-slate-200/80 bg-white shadow-sm;
-}
-@utility label {
-  @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500;
-}
-@utility input {
-  @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-base text-ink-800 outline-none transition
-    placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-500/15 sm:text-sm;
-}
-@utility chip {
-  @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium;
-}
-@utility section-title {
-  @apply font-display text-4xl leading-none text-ink-900 sm:text-5xl;
-}
-/* Rayures de vitesse rappelant le logo */
-@utility speed-lines {
-  background-image: repeating-linear-gradient(
-    -12deg,
-    transparent 0 22px,
-    rgba(0, 170, 255, 0.08) 22px 24px
-  );
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+@utility field-odoo {
+  @apply h-[50px] w-full rounded-none border-0 bg-ink-600 px-4 text-base text-white outline-none placeholder:text-[#8a8a8a] focus:ring-2 focus:ring-brand/60;
 }

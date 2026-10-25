@@ -1,137 +1,128 @@
 import { useEffect, useState } from 'react'
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import { Mail, Menu, Phone, X } from 'lucide-react'
-import { FacebookIcon, InstagramIcon } from './SocialIcons'
-import { COMPANY, DATA_SOURCE } from '../config'
-import { AssistantWidget } from './AssistantWidget'
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { SOCIAL } from '../config'
+import { useCart } from '../lib/cart'
 
 export const logoUrl = `${import.meta.env.BASE_URL}logo.webp`
 
 const NAV = [
-  { to: '/', label: 'Accueil' },
-  { to: '/flotte', label: 'Notre flotte' },
-  { to: '/a-propos', label: 'À propos' },
-  { to: '/faq', label: 'FAQ' },
-  { to: '/contact', label: 'Contact' },
+  { label: 'Accueil', section: 'top' },
+  { label: 'Comment ça marche ?', section: 'processus' },
+  { label: 'Notre flotte', section: 'flotte' },
+  { label: 'Avantages', section: 'avantages' },
 ]
 
-function ScrollToTop() {
+/** Fait défiler jusqu'à une section de l'accueil (depuis n'importe quelle page). */
+function useGoToSection() {
+  const navigate = useNavigate()
   const { pathname } = useLocation()
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [pathname])
-  return null
+  return (section: string) => {
+    if (pathname !== '/') return navigate('/', { state: { section } })
+    if (section === 'top') return window.scrollTo({ top: 0, behavior: 'smooth' })
+    document.getElementById(section)?.scrollIntoView({ behavior: 'smooth' })
+  }
 }
 
 function Header() {
   const [open, setOpen] = useState(false)
+  const { count } = useCart()
+  const goTo = useGoToSection()
   const { pathname } = useLocation()
   useEffect(() => {
     setOpen(false)
   }, [pathname])
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/5 bg-ink-900/95 text-white backdrop-blur">
-      <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2.5" aria-label="LEON Location PRO — accueil">
-          <img src={logoUrl} alt="" className="h-11 w-11" />
-          <span className="font-display text-2xl leading-none tracking-wide">
-            LEON <span className="text-brand-500">Location</span> PRO
-          </span>
+    <header className="fixed inset-x-0 top-0 z-40 bg-[linear-gradient(rgba(10,10,10,0.95),rgba(10,10,10,0.7))] backdrop-blur-[2px]">
+      <div className="flex h-[66px] items-center px-[15px]">
+        <Link to="/" className="mr-6 shrink-0" aria-label="LEON Location PRO — accueil">
+          <img src={logoUrl} alt="LEON Location PRO" className="h-[50px] w-[50px]" />
         </Link>
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden lg:flex">
           {NAV.map((n) => (
-            <NavLink
-              key={n.to}
-              to={n.to}
-              end={n.to === '/'}
-              className={({ isActive }) =>
-                `rounded-lg px-3 py-2 text-sm font-medium transition ${isActive ? 'text-brand-400' : 'text-slate-300 hover:text-white'}`
-              }
+            <button
+              key={n.section}
+              onClick={() => goTo(n.section)}
+              className="px-2 pb-1 pt-2 text-[12.48px] uppercase leading-[18.72px] tracking-[1.5px] text-navlink transition hover:text-white"
             >
               {n.label}
-            </NavLink>
+            </button>
           ))}
-          <Link to="/reserver" className="btn-primary ml-3 py-2.5">
-            Réserver
-          </Link>
         </nav>
-        <button className="rounded-lg p-2 md:hidden" onClick={() => setOpen((o) => !o)} aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'} aria-expanded={open}>
-          {open ? <X size={26} /> : <Menu size={26} />}
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          {count > 0 && (
+            <Link to="/shop/cart" className="relative grid h-8 w-8 place-items-center rounded-full bg-brand text-white" aria-label={`Panier (${count})`}>
+              <i className="fa fa-shopping-cart text-[13px]" />
+              <span className="absolute -right-1.5 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-[#1d74c9] px-1 text-[10px] font-bold">{count}</span>
+            </Link>
+          )}
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className="grid h-[34px] w-[34px] place-items-center bg-brand text-white lg:hidden"
+            aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-expanded={open}
+          >
+            <i className={`fa ${open ? 'fa-times' : 'fa-bars'} text-lg`} />
+          </button>
+        </div>
       </div>
       {open && (
-        <nav className="border-t border-white/10 bg-ink-900 md:hidden">
-          <div className="container-page flex flex-col py-3">
-            {NAV.map((n) => (
-              <NavLink
-                key={n.to}
-                to={n.to}
-                end={n.to === '/'}
-                className={({ isActive }) => `rounded-lg px-2 py-3 text-base font-medium ${isActive ? 'text-brand-400' : 'text-slate-200'}`}
-              >
-                {n.label}
-              </NavLink>
-            ))}
-            <Link to="/reserver" className="btn-primary mt-2 py-3.5 text-base">
-              Réserver un véhicule
-            </Link>
-            <a href={COMPANY.phoneHref} className="mt-3 flex items-center justify-center gap-2 py-2 text-sm text-slate-300">
-              <Phone size={16} /> {COMPANY.phone}
-            </a>
-          </div>
+        <nav className="border-t border-white/10 bg-ink-650 px-[15px] py-2 lg:hidden">
+          {NAV.map((n) => (
+            <button
+              key={n.section}
+              onClick={() => {
+                setOpen(false)
+                goTo(n.section)
+              }}
+              className="block w-full py-3 text-left text-[13px] uppercase tracking-[1.5px] text-navlink"
+            >
+              {n.label}
+            </button>
+          ))}
         </nav>
       )}
     </header>
   )
 }
 
+export function TikTokIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M19.6 6.7a4.8 4.8 0 0 1-3.8-4.2V2h-3.4v13.6a2.9 2.9 0 1 1-2-2.7V9.4a6.3 6.3 0 1 0 5.4 6.2V8.7a8.2 8.2 0 0 0 3.8 1.2V6.7z" />
+    </svg>
+  )
+}
+
 function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-ink-900 text-slate-400">
-      <div className="h-1 bg-gradient-to-r from-brand-500 via-brand-500 to-accent-500" />
-      <div className="container-page grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
+    <footer className="bg-footer py-10 text-white">
+      <div className="container-odoo grid gap-8 md:grid-cols-3 md:gap-[30px]">
         <div>
-          <img src={logoUrl} alt="LEON Location PRO" className="h-24 w-24" />
-          <p className="mt-3 font-display text-2xl text-white">{COMPANY.slogan}</p>
-          <p className="mt-1 text-sm">Votre partenaire de confiance pour explorer La Réunion.</p>
-        </div>
-        <div>
-          <h3 className="font-display text-xl text-white">Location</h3>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li><Link to="/reserver" className="hover:text-white">Réserver en ligne</Link></li>
-            <li><Link to="/flotte" className="hover:text-white">Notre flotte</Link></li>
-            <li><Link to="/faq" className="hover:text-white">Questions fréquentes</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-display text-xl text-white">Informations</h3>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li><Link to="/a-propos" className="hover:text-white">À propos</Link></li>
-            <li><Link to="/contact" className="hover:text-white">Contact</Link></li>
-            <li><Link to="/cgv" className="hover:text-white">Conditions générales de vente</Link></li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="font-display text-xl text-white">Nous joindre</h3>
-          <ul className="mt-3 space-y-2 text-sm">
-            <li><a href={COMPANY.phoneHref} className="flex items-center gap-2 hover:text-white"><Phone size={15} /> {COMPANY.phone}</a></li>
-            <li><a href={`mailto:${COMPANY.email}`} className="flex items-center gap-2 break-all hover:text-white"><Mail size={15} /> {COMPANY.email}</a></li>
-          </ul>
-          <div className="mt-4 flex gap-2">
-            <a href={COMPANY.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="rounded-lg bg-white/5 p-2.5 hover:bg-brand-500 hover:text-white"><FacebookIcon /></a>
-            <a href={COMPANY.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="rounded-lg bg-white/5 p-2.5 hover:bg-accent-500 hover:text-white"><InstagramIcon /></a>
-          </div>
-        </div>
-      </div>
-      <div className="border-t border-white/5">
-        <div className="container-page flex flex-col gap-2 py-5 text-xs sm:flex-row sm:justify-between">
-          <p>© {new Date().getFullYear()} {COMPANY.name} — La Réunion (974)</p>
-          <p className="flex gap-4">
-            <Link to="/cgv" className="hover:text-white">CGV</Link>
-            <Link to="/contact" className="hover:text-white">Mentions légales</Link>
-            <Link to="/admin" className="hover:text-white">Espace pro</Link>
+          <h4 className="font-display text-2xl leading-none tracking-[2.4px]">
+            LEON <span className="text-brand">LOCATION</span> PRO
+          </h4>
+          <img src={logoUrl} alt="" className="mt-3 h-[50px] w-[50px]" />
+          <p className="mt-3 text-[14.4px] italic leading-[21.6px] text-muted">
+            Votre partenaire de confiance pour explorer La Réunion en toute liberté. Qualité pro, service local.
           </p>
+        </div>
+        <div>
+          <h5 className="mb-4 font-display text-xl leading-none tracking-[2px] text-brand underline underline-offset-4">INFORMATIONS</h5>
+          <ul className="space-y-[10.4px] text-[14.4px] leading-[21.6px]">
+            <li><Link to="/politique-confidentialite" className="hover:text-brand">Politique de confidentialité</Link></li>
+            <li><Link to="/modalites-vente" className="hover:text-brand">Modalités de vente (CGV)</Link></li>
+            <li><Link to="/mentions-legales" className="hover:text-brand">Mentions Légales</Link></li>
+          </ul>
+        </div>
+        <div>
+          <h5 className="mb-4 font-display text-xl leading-none tracking-[2px] text-brand underline underline-offset-4">NOUS SUIVRE</h5>
+          <div className="flex items-center gap-5 text-brand">
+            <a href={SOCIAL.facebook} target="_blank" rel="noreferrer" aria-label="Facebook"><i className="fa fa-facebook" /></a>
+            <a href={SOCIAL.instagram} target="_blank" rel="noreferrer" aria-label="Instagram"><i className="fa fa-instagram" /></a>
+            <a href={SOCIAL.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok"><TikTokIcon className="h-[21px] w-[21px]" /></a>
+          </div>
+          <p className="mt-6 text-sm text-muted">© {new Date().getFullYear()} LEON Location PRO. Tous droits réservés.</p>
         </div>
       </div>
     </footer>
@@ -139,20 +130,23 @@ function Footer() {
 }
 
 export function Layout() {
+  const { pathname, state } = useLocation()
+  useEffect(() => {
+    const section = (state as { section?: string } | null)?.section
+    if (section && section !== 'top') {
+      requestAnimationFrame(() => document.getElementById(section)?.scrollIntoView())
+    } else {
+      window.scrollTo(0, 0)
+    }
+  }, [pathname, state])
+
   return (
     <div className="flex min-h-svh flex-col">
-      <ScrollToTop />
-      {DATA_SOURCE === 'mock' && (
-        <div className="bg-accent-500 px-4 py-1.5 text-center text-xs font-medium text-white">
-          Site de démonstration : véhicules, prix et réservations fictifs. Aucun paiement réel.
-        </div>
-      )}
       <Header />
-      <main className="flex-1">
+      <main className="flex-1 pt-[66px]">
         <Outlet />
       </main>
       <Footer />
-      <AssistantWidget />
     </div>
   )
 }

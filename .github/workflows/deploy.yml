@@ -38,7 +38,11 @@ jobs:
         env:
           # Le site est servi depuis https://<compte>.github.io/<nom-du-dépôt>/
           BASE_PATH: /${{ github.event.repository.name }}/
-          VITE_DATA_SOURCE: mock
+          # Réglages GitHub → Settings → Secrets and variables → Actions → Variables :
+          #   DATA_SOURCE = odoo  et  WORKER_URL = https://<votre-worker>.workers.dev/api
+          # Tant qu'ils ne sont pas définis, le site publié utilise la démonstration (mock).
+          VITE_DATA_SOURCE: ${{ vars.DATA_SOURCE || 'mock' }}
+          VITE_WORKER_URL: ${{ vars.WORKER_URL }}
 
       - name: Configurer GitHub Pages
         uses: actions/configure-pages@v5

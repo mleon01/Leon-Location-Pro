@@ -1,45 +1,20 @@
 // ─────────────────────────────────────────────────────────────
 //  COUCHE UNIQUE D'ACCÈS AUX DONNÉES
-//  Toutes les pages passent par `data` : elles ne savent pas si les
-//  informations viennent des fichiers de démonstration ou d'Odoo.
+//  Les pages appellent `data` sans savoir d'où viennent les informations.
 // ─────────────────────────────────────────────────────────────
 import { DATA_SOURCE } from '../config'
-import type {
-  Availability,
-  Booking,
-  BookingConfirmation,
-  BookingOption,
-  BookingRequest,
-  ChatMessage,
-  Customer,
-  DashboardStats,
-  Location,
-  PricingRules,
-  Quote,
-  RentalOption,
-  SearchQuery,
-  Vehicle,
-} from '../types'
+import type { CartLine, Catalog, CheckoutRequest, CheckoutResult, Quote, SearchResult } from '../../shared/api'
 import { mockProvider } from './mockProvider'
 import { odooProvider } from './odooProvider'
 
 export interface DataProvider {
-  // — Partie publique —
-  getVehicles(): Promise<Vehicle[]>
-  getVehicle(id: string): Promise<Vehicle | undefined>
-  getLocations(): Promise<Location[]>
-  getOptions(): Promise<RentalOption[]>
-  getPricingRules(): Promise<PricingRules>
-  searchAvailability(query: SearchQuery): Promise<Availability[]>
-  getQuote(query: SearchQuery, vehicleId: string, options: BookingOption[]): Promise<Quote>
-  createBooking(request: BookingRequest): Promise<BookingConfirmation>
-  askAssistant(history: ChatMessage[]): Promise<string>
-
-  // — Espace administrateur —
-  getBookings(): Promise<Booking[]>
-  getBooking(id: string): Promise<Booking | undefined>
-  getCustomers(): Promise<Customer[]>
-  getDashboardStats(): Promise<DashboardStats>
+  getCatalog(): Promise<Catalog>
+  /** Prix et disponibilités de chaque véhicule pour la période (dates Odoo UTC) */
+  search(start: string, end: string): Promise<SearchResult[]>
+  /** Récapitulatif du panier calculé par Odoo */
+  quote(start: string, end: string, lines: CartLine[]): Promise<Quote>
+  /** Crée le client et le devis de location dans Odoo, renvoie le lien de paiement */
+  checkout(request: CheckoutRequest): Promise<CheckoutResult>
 }
 
-export const data: DataProvider = DATA_SOURCE === 'odoo' ? odooProvider : mockProvider
+export const data: DataProvider = DATA_SOURCE === 'mock' ? mockProvider : odooProvider
