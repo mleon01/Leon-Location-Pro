@@ -1,0 +1,35 @@
+# Dépendances
+node_modules/
+
+# Builds
+dist/
+worker/dist/
+worker/.wrangler/
+
+# Secrets — NE JAMAIS COMMITER
+.env
+.env.*
+!.env.example
+.dev.vars
+*.dev.vars
+!.dev.vars.example
+*.pem
+*.key
+
+# Exports de données réelles (Odoo, clients…)
+exports/
+*.csv
+*.xlsx
+
+# Journaux et fichiers système
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.local

@@ -1,0 +1,20 @@
+[
+  { "id": "c-01", "firstName": "Marie", "lastName": "Payet", "email": "marie.payet@example.com", "phone": "0692 00 00 01", "city": "Saint-Denis", "licenseYear": 2012, "createdAt": "2025-03-14" },
+  { "id": "c-02", "firstName": "Jean-Luc", "lastName": "Hoarau", "email": "jl.hoarau@example.com", "phone": "0692 00 00 02", "city": "Saint-Pierre", "licenseYear": 1998, "createdAt": "2025-04-02" },
+  { "id": "c-03", "firstName": "Sophie", "lastName": "Grondin", "email": "sophie.grondin@example.com", "phone": "0693 00 00 03", "city": "Le Tampon", "licenseYear": 2016, "createdAt": "2025-05-21" },
+  { "id": "c-04", "firstName": "Thomas", "lastName": "Martin", "email": "thomas.martin@example.com", "phone": "06 00 00 00 04", "city": "Lyon", "licenseYear": 2010, "createdAt": "2025-06-11" },
+  { "id": "c-05", "firstName": "Laura", "lastName": "Rivière", "email": "laura.riviere@example.com", "phone": "06 00 00 00 05", "city": "Bordeaux", "licenseYear": 2018, "createdAt": "2025-07-03" },
+  { "id": "c-06", "firstName": "Kévin", "lastName": "Fontaine", "email": "kevin.fontaine@example.com", "phone": "0692 00 00 06", "city": "Saint-Paul", "licenseYear": 2019, "createdAt": "2025-07-29" },
+  { "id": "c-07", "firstName": "Nadia", "lastName": "Boyer", "email": "nadia.boyer@example.com", "phone": "0693 00 00 07", "city": "Saint-André", "licenseYear": 2008, "createdAt": "2025-08-17" },
+  { "id": "c-08", "firstName": "Julien", "lastName": "Técher", "email": "julien.techer@example.com", "phone": "0692 00 00 08", "city": "Saint-Louis", "licenseYear": 2014, "createdAt": "2025-09-05" },
+  { "id": "c-09", "firstName": "Émilie", "lastName": "Lauret", "email": "emilie.lauret@example.com", "phone": "0693 00 00 09", "city": "Sainte-Marie", "licenseYear": 2011, "createdAt": "2025-10-12" },
+  { "id": "c-10", "firstName": "David", "lastName": "Dupont", "email": "david.dupont@example.com", "phone": "06 00 00 00 10", "city": "Paris", "licenseYear": 2005, "createdAt": "2025-11-08" },
+  { "id": "c-11", "firstName": "Chloé", "lastName": "Bègue", "email": "chloe.begue@example.com", "phone": "0692 00 00 11", "city": "Saint-Benoît", "licenseYear": 2020, "createdAt": "2025-12-01" },
+  { "id": "c-12", "firstName": "Mathieu", "lastName": "Robert", "email": "mathieu.robert@example.com", "phone": "06 00 00 00 12", "city": "Nantes", "licenseYear": 2009, "createdAt": "2026-01-19" },
+  { "id": "c-13", "firstName": "Sarah", "lastName": "Morel", "email": "sarah.morel@example.com", "phone": "06 00 00 00 13", "city": "Marseille", "licenseYear": 2015, "createdAt": "2026-02-23" },
+  { "id": "c-14", "firstName": "Patrick", "lastName": "Nativel", "email": "patrick.nativel@example.com", "phone": "0692 00 00 14", "city": "Saint-Joseph", "licenseYear": 1995, "createdAt": "2026-03-30" },
+  { "id": "c-15", "firstName": "Anaïs", "lastName": "Lebon", "email": "anais.lebon@example.com", "phone": "0693 00 00 15", "city": "La Possession", "licenseYear": 2017, "createdAt": "2026-05-06" },
+  { "id": "c-16", "firstName": "Hugo", "lastName": "Lefèvre", "email": "hugo.lefevre@example.com", "phone": "06 00 00 00 16", "city": "Toulouse", "licenseYear": 2013, "createdAt": "2026-06-14" },
+  { "id": "c-17", "firstName": "Léa", "lastName": "Turpin", "email": "lea.turpin@example.com", "phone": "0692 00 00 17", "city": "Saint-Leu", "licenseYear": 2021, "createdAt": "2026-07-22" },
+  { "id": "c-18", "firstName": "Olivier", "lastName": "Maillot", "email": "olivier.maillot@example.com", "phone": "0693 00 00 18", "city": "Étang-Salé", "licenseYear": 2003, "createdAt": "2026-08-30" }
+]
