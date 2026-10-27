@@ -1,31 +1,33 @@
 import { useEffect } from 'react'
-import { HashRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { CartProvider } from './lib/cart'
 import { HomePage } from './pages/HomePage'
 import { ShopPage } from './pages/ShopPage'
-import { CartPage } from './pages/CartPage'
-import { AddressPage } from './pages/AddressPage'
-import { PaymentPage } from './pages/PaymentPage'
+import { CheckoutPage } from './pages/CheckoutPage'
+import { PaymentSimPage } from './pages/PaymentSimPage'
+import { ConfirmationPage } from './pages/ConfirmationPage'
+import { DocumentsPage } from './pages/DocumentsPage'
+import { CgvPage } from './pages/CgvPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 
 const TITLES: Record<string, string> = {
   '/': 'Home',
   '/shop': 'Boutique',
-  '/shop/cart': 'Panier',
-  '/shop/address': 'Adresse',
-  '/shop/payment': 'Paiement',
+  '/recapitulatif': 'Récapitulatif',
+  '/modalites-vente': 'Conditions générales de vente',
 }
 
 function DocumentTitle() {
   const { pathname } = useLocation()
   useEffect(() => {
-    document.title = `${TITLES[pathname] ?? 'Page Not Found'} | LEON Location PRO`
+    const title = TITLES[pathname] ?? (/^\/(paiement|reservation|documents)\//.test(pathname) ? 'Réservation' : 'Page Not Found')
+    document.title = `${title} | LEON Location PRO`
   }, [pathname])
   return null
 }
 
-// HashRouter : adresses en « #/shop… », compatibles avec GitHub Pages.
+// HashRouter : adresses en « #/shop… », compatibles avec un hébergement statique.
 export default function App() {
   return (
     <CartProvider>
@@ -35,9 +37,12 @@ export default function App() {
           <Route element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route path="shop" element={<ShopPage />} />
-            <Route path="shop/cart" element={<CartPage />} />
-            <Route path="shop/address" element={<AddressPage />} />
-            <Route path="shop/payment" element={<PaymentPage />} />
+            <Route path="recapitulatif" element={<CheckoutPage />} />
+            <Route path="shop/cart" element={<Navigate to="/recapitulatif" replace />} />
+            <Route path="paiement/:ref" element={<PaymentSimPage />} />
+            <Route path="reservation/:ref" element={<ConfirmationPage />} />
+            <Route path="documents/:ref" element={<DocumentsPage />} />
+            <Route path="modalites-vente" element={<CgvPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Routes>

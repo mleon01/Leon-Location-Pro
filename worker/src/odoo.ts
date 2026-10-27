@@ -11,6 +11,12 @@ export interface Env {
   FEATURED_CATEGORY_ID: string
   TZ_OFFSET_HOURS: string
   ALLOWED_ORIGINS: string
+  /** "simulation" tant que Stripe et Alma ne sont pas branchés */
+  PAYMENT_MODE: string
+  /** Adresse publique du site (liens dans les e-mails) */
+  SITE_URL: string
+  /** Secret servant à signer les liens (paiement, dépôt de documents) */
+  SIGNING_SECRET: string
   CHECKOUT_LIMITER?: { limit(opts: { key: string }): Promise<{ success: boolean }> }
 }
 
@@ -33,7 +39,7 @@ async function jsonRpc<T>(env: Env, path: string, params: unknown): Promise<T> {
 
 export const publicRoute = <T>(env: Env, path: string, params: Record<string, unknown> = {}) => jsonRpc<T>(env, path, params)
 
-async function uid(env: Env): Promise<number> {
+export async function currentUid(env: Env): Promise<number> {
   if (cachedUid) return cachedUid
   const id = await jsonRpc<number | false>(env, '/jsonrpc', {
     service: 'common',
@@ -49,6 +55,6 @@ export async function execute<T>(env: Env, model: string, method: string, args: 
   return jsonRpc<T>(env, '/jsonrpc', {
     service: 'object',
     method: 'execute_kw',
-    args: [env.ODOO_DB, await uid(env), env.ODOO_API_KEY, model, method, args, kwargs],
+    args: [env.ODOO_DB, await currentUid(env), env.ODOO_API_KEY, model, method, args, kwargs],
   })
 }

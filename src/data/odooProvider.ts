@@ -6,11 +6,9 @@ import type { DataProvider } from './provider'
 async function api<T>(path: string, body?: unknown): Promise<T> {
   let res: Response
   try {
-    res = await fetch(`${WORKER_URL}${path}`, body === undefined ? undefined : {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
+    res = await fetch(`${WORKER_URL}${path}`, body === undefined ? undefined : body instanceof FormData
+      ? { method: 'POST', body }
+      : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
   } catch {
     throw new Error('Impossible de joindre le service de réservation. Vérifiez votre connexion.')
   }
@@ -27,6 +25,15 @@ export const odooProvider: DataProvider = {
     throw e
   })),
   search: (start, end) => api(`/search?${new URLSearchParams({ start, end })}`),
-  quote: (start, end, lines) => api('/quote', { start, end, lines }),
+  quote: (request) => api('/quote', request),
   checkout: (request) => api('/checkout', request),
+  getOrder: (ref) => api(`/order/${encodeURIComponent(ref)}`),
+  simulatePayment: (ref) => api('/payment/simulate', { ref }),
+  getDocuments: (ref) => api(`/documents/${encodeURIComponent(ref)}`),
+  uploadDocument: (ref, kind, file) => {
+    const form = new FormData()
+    form.append('kind', kind)
+    form.append('file', file)
+    return api(`/documents/${encodeURIComponent(ref)}`, form)
+  },
 }

@@ -5,3 +5,7 @@
 # ODOO_API_KEY : Odoo → Mon profil → Sécurité du compte → Nouvelle clé API
 ODOO_LOGIN=votre-email@exemple.com
 ODOO_API_KEY=collez-ici-votre-cle-api
+# SIGNING_SECRET : longue chaîne aléatoire qui signe les liens de paiement et de dépôt de documents
+# (générer : node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+SIGNING_SECRET=une-longue-chaine-aleatoire
+SITE_URL=http://127.0.0.1:5173

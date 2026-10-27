@@ -13,6 +13,33 @@ Visiteur ──► Site (GitHub Pages, puis Cloudflare Pages)
 
 ---
 
+## Mise à jour « parcours v2 » (lieu de remise, caution, paiement, documents, contrat)
+
+À faire **dans cet ordre**, sinon le site en ligne appellerait un Worker qui ne connaît pas encore les nouvelles routes :
+
+1. **Configurer Odoo** (une fois, relançable sans risque) : `node odoo/setup.mjs`
+   Crée les champs (caution, lieu de remise, statut des documents…), les dossiers Documents
+   « Location — Pièces clients » et « Location — Contrats signés », les modèles d'e-mails,
+   les automatisations (rappel documents J-3, envoi du contrat signé + photos) et deux journaux
+   de test (`TST`, `TSTB`) qui reçoivent les factures et paiements simulés.
+2. **Secret de signature des liens** (une fois) : `cd worker && npx wrangler secret put SIGNING_SECRET`
+   puis collez une longue chaîne aléatoire (`node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`).
+3. **Déployer le Worker** : `npx wrangler deploy`
+4. **Publier le site** : `git push` sur `main`.
+
+Tant que `PAYMENT_MODE = "simulation"` (dans `worker/wrangler.toml`), aucun paiement réel n'est possible :
+le client passe par une page de paiement simulée. Pour brancher Stripe et Alma, il faudra ajouter leurs
+clés secrètes au Worker et remplacer la page simulée par leurs pages de paiement (le reste ne change pas).
+
+**Le jour du départ, sur la tablette (application Odoo)** :
+1. Ouvrir la commande → onglet « Réservation en ligne » → vérifier les documents (passer à « Validés »).
+2. Prendre les photos de l'état des lieux et les joindre à la commande (trombone du fil de discussion).
+3. Ouvrir le contrat (« Contrat de location ») → compléter kilométrage, carburant, observations → signer.
+4. Cliquer sur « Faire signer le client » → le client signe sur la tablette.
+5. Automatique : le contrat signé est classé dans Documents › Location — Contrats signés et envoyé au client avec les photos.
+
+---
+
 ## Étape 1 — Préparer Odoo
 
 1. **Créer une clé API dédiée au site**

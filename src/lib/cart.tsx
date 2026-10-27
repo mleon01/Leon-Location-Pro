@@ -1,4 +1,4 @@
-// Panier (comme celui de la boutique Odoo) : une période de location + des lignes.
+// Panier : une période de location, des lignes (véhicule + options) et le lieu de remise.
 // Conservé dans le navigateur du visiteur jusqu'à la commande.
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { CartLine } from '../../shared/api'
@@ -7,18 +7,22 @@ export interface Cart {
   start: string | null
   end: string | null
   lines: CartLine[]
+  deliveryId: number | null
+  deliveryDetail: string
 }
 
 interface CartApi extends Cart {
   count: number
   setPeriod(start: string, end: string): void
-  addLines(start: string, end: string, lines: CartLine[]): void
+  /** Remplace le contenu du panier (un véhicule et ses options par réservation) */
+  setBooking(booking: { start: string; end: string; lines: CartLine[]; deliveryId: number; deliveryDetail: string }): void
+  setDelivery(deliveryId: number, deliveryDetail: string): void
   removeLine(productId: number): void
   clear(): void
 }
 
 const KEY = 'llp-cart'
-const empty: Cart = { start: null, end: null, lines: [] }
+const empty: Cart = { start: null, end: null, lines: [], deliveryId: null, deliveryDetail: '' }
 
 function load(): Cart {
   try {
@@ -44,25 +48,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [cart])
 
   const setPeriod = useCallback((start: string, end: string) => setCart((c) => ({ ...c, start, end })), [])
-  const addLines = useCallback(
-    (start: string, end: string, lines: CartLine[]) =>
-      setCart((c) => {
-        let merged = c.lines
-        for (const l of lines) {
-          merged = merged.some((m) => m.productId === l.productId)
-            ? merged.map((m) => (m.productId === l.productId ? { ...m, qty: m.qty + l.qty } : m))
-            : [...merged, { ...l }]
-        }
-        return { start, end, lines: merged }
-      }),
-    [],
-  )
+  const setBooking = useCallback<CartApi['setBooking']>((b) => setCart({ ...b }), [])
+  const setDelivery = useCallback((deliveryId: number, deliveryDetail: string) => setCart((c) => ({ ...c, deliveryId, deliveryDetail })), [])
   const removeLine = useCallback((productId: number) => setCart((c) => ({ ...c, lines: c.lines.filter((l) => l.productId !== productId) })), [])
   const clear = useCallback(() => setCart(empty), [])
 
   const value = useMemo(
-    () => ({ ...cart, count: cart.lines.reduce((s, l) => s + l.qty, 0), setPeriod, addLines, removeLine, clear }),
-    [cart, setPeriod, addLines, removeLine, clear],
+    () => ({ ...cart, count: cart.lines.reduce((s, l) => s + l.qty, 0), setPeriod, setBooking, setDelivery, removeLine, clear }),
+    [cart, setPeriod, setBooking, setDelivery, removeLine, clear],
   )
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }

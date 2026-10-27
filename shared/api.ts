@@ -19,6 +19,8 @@ export interface CatalogProduct {
   listPrice: number
   /** Libellé Odoo, ex. « 35,00 € / Jour » */
   displayPrice: string
+  /** Montant de la caution (non débitée) */
+  deposit: number
   featured: boolean
   image: string
   images: string[]
@@ -35,6 +37,15 @@ export interface CatalogOption {
   image: string
 }
 
+/** Lieu de remise du véhicule (mode de livraison Odoo) */
+export interface DeliveryMethod {
+  id: number
+  name: string
+  price: number
+  /** Le client doit préciser l'adresse (lieu personnalisé) */
+  requiresAddress: boolean
+}
+
 export interface Country {
   id: number
   name: string
@@ -45,6 +56,7 @@ export interface Country {
 export interface Catalog {
   products: CatalogProduct[]
   options: CatalogOption[]
+  deliveryMethods: DeliveryMethod[]
   tax: { rate: number; label: string }
   /** Jours interdits (1 = lundi … 7 = dimanche) */
   forbiddenWeekdays: number[]
@@ -67,6 +79,7 @@ export interface CartLine {
 }
 
 export interface QuoteLine {
+  kind: 'rental' | 'option' | 'delivery'
   productId: number
   templateId: number
   name: string
@@ -79,6 +92,13 @@ export interface QuoteLine {
   image: string
 }
 
+export interface QuoteRequest {
+  start: string
+  end: string
+  lines: CartLine[]
+  deliveryId?: number | null
+}
+
 export interface Quote {
   start: string
   end: string
@@ -89,6 +109,8 @@ export interface Quote {
   taxLabel: string
   tax: number
   total: number
+  /** Caution du véhicule (non débitée) */
+  deposit: number
   allAvailable: boolean
 }
 
@@ -107,16 +129,48 @@ export interface CustomerInput {
   website?: string
 }
 
-export interface CheckoutRequest {
-  start: string
-  end: string
-  lines: CartLine[]
+export type DepositMode = 'gando' | 'tpe'
+export type PaymentMode = 'card' | 'alma3' | 'alma4'
+
+export interface CheckoutRequest extends QuoteRequest {
+  deliveryId: number
+  deliveryDetail?: string
   customer: CustomerInput
+  depositMode: DepositMode
+  paymentMode: PaymentMode
+  acceptTerms: boolean
 }
 
 export interface CheckoutResult {
   orderName: string
   amountTotal: number
-  /** Page du portail Odoo pour payer (Stripe) */
+  /** Page de paiement (Stripe / Alma, ou page simulée en mode test) */
   paymentUrl: string
+}
+
+/** Informations affichées sur la page de paiement simulée et la confirmation */
+export interface OrderSummary {
+  orderId: number
+  orderName: string
+  amountTotal: number
+  paymentMode: PaymentMode
+  depositMode: DepositMode
+  depositAmount: number
+  paid: boolean
+  customerFirstName: string
+  email: string
+  documentsUrl: string
+  simulation: boolean
+}
+
+export type DocumentKind = 'permis_recto' | 'permis_verso' | 'identite_recto' | 'identite_verso'
+
+export interface DocumentsStatus {
+  orderName: string
+  customerFirstName: string
+  start: string
+  depositMode: DepositMode
+  depositAmount: number
+  uploaded: DocumentKind[]
+  complete: boolean
 }

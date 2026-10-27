@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { SOCIAL } from '../config'
-import { useCart } from '../lib/cart'
 
 export const logoUrl = `${import.meta.env.BASE_URL}logo.webp`
 
@@ -25,7 +24,6 @@ function useGoToSection() {
 
 function Header() {
   const [open, setOpen] = useState(false)
-  const { count } = useCart()
   const goTo = useGoToSection()
   const { pathname } = useLocation()
   useEffect(() => {
@@ -50,12 +48,6 @@ function Header() {
           ))}
         </nav>
         <div className="ml-auto flex items-center gap-2">
-          {count > 0 && (
-            <Link to="/shop/cart" className="relative grid h-8 w-8 place-items-center rounded-full bg-brand text-white" aria-label={`Panier (${count})`}>
-              <i className="fa fa-shopping-cart text-[13px]" />
-              <span className="absolute -right-1.5 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-[#1d74c9] px-1 text-[10px] font-bold">{count}</span>
-            </Link>
-          )}
           <button
             onClick={() => setOpen((o) => !o)}
             className="grid h-[34px] w-[34px] place-items-center bg-brand text-white lg:hidden"

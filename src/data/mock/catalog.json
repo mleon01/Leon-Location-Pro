@@ -35,7 +35,8 @@
     15,
     17,
     16
-   ]
+   ],
+   "deposit": 800
   },
   {
    "id": 1,
@@ -66,7 +67,8 @@
     15,
     17,
     16
-   ]
+   ],
+   "deposit": 1200
   }
  ],
  "options": [
@@ -195,5 +197,43 @@
    "phoneCode": 1
   }
  ],
- "defaultCountryId": 75
+ "defaultCountryId": 75,
+ "deliveryMethods": [
+  {
+   "id": 2,
+   "name": "Aéroport de la Réunion Roland Garros",
+   "price": 15,
+   "requiresAddress": false
+  },
+  {
+   "id": 3,
+   "name": "Grand Port Maritime de la Réunion",
+   "price": 15,
+   "requiresAddress": false
+  },
+  {
+   "id": 4,
+   "name": "Carrefour Sainte-Clotilde (La Réunion)",
+   "price": 15,
+   "requiresAddress": false
+  },
+  {
+   "id": 5,
+   "name": "E.Leclerc Piton Saint-Leu (La Réunion)",
+   "price": 35,
+   "requiresAddress": false
+  },
+  {
+   "id": 6,
+   "name": "Carrefour Sainte-Suzanne (La Réunion)",
+   "price": 35,
+   "requiresAddress": false
+  },
+  {
+   "id": 7,
+   "name": "Livraison dans un lieu personnalisé",
+   "price": 65,
+   "requiresAddress": true
+  }
+ ]
 }
