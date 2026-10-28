@@ -228,3 +228,31 @@ await ensure('base.automation', [['name', '=', 'LEON — Contrat signé : envoi 
 log('automatisations')
 
 console.log('\nConfiguration Odoo terminée. Le Worker retrouve ces éléments par leur nom : rien à recopier.')
+
+// ─── 8. Synchronisation Parc automobile ↔ Location ───
+// Véhicule remis au client → « En location » ; rendu ou réservation annulée → « Disponible ».
+const fleetSyncCode = `etat_location = env['fleet.vehicle.state'].search([('name', '=', 'En location')], limit=1)
+etat_dispo = env['fleet.vehicle.state'].search([('name', '=', 'Disponible')], limit=1)
+for order in records:
+    vehicles = env['fleet.vehicle']
+    for line in order.order_line.filtered(lambda l: l.is_rental):
+        lots = line.pickedup_lot_ids or line.reserved_lot_ids
+        vehicles |= lots.mapped('x_fleet_vehicle_id') if lots else line.product_id.x_vehicule_parc_id
+    if not vehicles:
+        continue
+    if order.rental_status == 'return' and etat_location:
+        vehicles.write({'state_id': etat_location.id})
+        order.message_post(body="Parc automobile : %s passé(s) « En location »." % ', '.join(vehicles.mapped('license_plate')))
+    elif order.rental_status in ('returned', 'cancel') and etat_dispo:
+        vehicles.write({'state_id': etat_dispo.id})
+`
+await ensure('base.automation', [['name', '=', 'LEON — Parc automobile synchronisé avec la location']], {
+  name: 'LEON — Parc automobile synchronisé avec la location',
+  model_id: saleModel,
+  trigger: 'on_create_or_write',
+  trigger_field_ids: [[6, 0, [await fieldId('sale.order', 'rental_status')]]],
+  action_server_ids: [[5, 0, 0], [0, 0, {
+    name: 'Mettre à jour l\'état des véhicules', model_id: saleModel, usage: 'base_automation', state: 'code', code: fleetSyncCode,
+  }]],
+})
+log('synchronisation parc ↔ location')

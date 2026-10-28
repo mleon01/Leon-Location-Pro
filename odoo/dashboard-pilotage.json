@@ -1,0 +1,1075 @@
+{
+ "version": "18.5.10",
+ "sheets": [
+  {
+   "id": "leon-dashboard",
+   "name": "Pilotage",
+   "colNumber": 6,
+   "rowNumber": 60,
+   "cols": {
+    "0": {
+     "size": 330
+    },
+    "1": {
+     "size": 150
+    },
+    "2": {
+     "size": 150
+    },
+    "3": {
+     "size": 330
+    },
+    "4": {
+     "size": 150
+    },
+    "5": {
+     "size": 40
+    }
+   },
+   "rows": {
+    "0": {
+     "size": 46
+    },
+    "1": {
+     "size": 23
+    },
+    "2": {
+     "size": 23
+    },
+    "3": {
+     "size": 23
+    },
+    "4": {
+     "size": 23
+    },
+    "5": {
+     "size": 23
+    },
+    "6": {
+     "size": 23
+    },
+    "7": {
+     "size": 23
+    },
+    "8": {
+     "size": 23
+    },
+    "9": {
+     "size": 23
+    },
+    "10": {
+     "size": 23
+    },
+    "11": {
+     "size": 23
+    },
+    "13": {
+     "size": 30
+    },
+    "14": {
+     "size": 30
+    },
+    "15": {
+     "size": 30
+    },
+    "16": {
+     "size": 30
+    },
+    "17": {
+     "size": 30
+    },
+    "18": {
+     "size": 30
+    },
+    "19": {
+     "size": 30
+    },
+    "20": {
+     "size": 30
+    },
+    "21": {
+     "size": 30
+    }
+   },
+   "merges": [
+    "A1:E1",
+    "A2:E2"
+   ],
+   "styles": {
+    "A1": 1,
+    "A2": 2,
+    "A13:B13": 3,
+    "D13:E13": 3,
+    "A24:E24": 3,
+    "A46:E46": 3,
+    "A14:A20": 4,
+    "D14:D22": 4,
+    "A47:E47": 5
+   },
+   "formats": {},
+   "borders": {},
+   "cells": {
+    "A1": "LEON LOCATION PRO — PILOTAGE",
+    "A2": "Vue d’ensemble de l’activité · utilisez le filtre « Période » en haut pour changer la période des indicateurs.",
+    "A13": "À TRAITER",
+    "A14": "[🔑  Retraits à venir](odoo://ir_menu_id/844)",
+    "A15": "[🚗  Véhicules en location / retours](odoo://ir_menu_id/845)",
+    "A16": "[📄  Documents clients à vérifier](odoo://ir_menu_id/846)",
+    "A17": "[✍️  Contrats à faire signer](odoo://ir_menu_id/847)",
+    "A18": "[💶  Factures impayées](odoo://ir_menu_id/848)",
+    "A19": "[📅  Planning des locations](odoo://ir_menu_xml_id/sale_renting.menu_rental_schedule)",
+    "A20": "[➕  Toutes les réservations / nouvelle réservation](odoo://ir_menu_xml_id/sale_renting.rental_orders_all)",
+    "D13": "APPLICATIONS",
+    "D14": "[👥  Clients](odoo://ir_menu_xml_id/contacts.res_partner_menu_contacts)",
+    "D15": "[🚙  Parc automobile](odoo://ir_menu_xml_id/fleet.fleet_vehicle_menu)",
+    "D16": "[🏷️  Véhicules, options et tarifs](odoo://ir_menu_xml_id/sale_renting.menu_catalog_products)",
+    "D17": "[📍  Lieux de remise et prix](odoo://ir_menu_id/849)",
+    "D18": "[🧾  Factures](odoo://ir_menu_xml_id/account.menu_action_move_out_invoice_type)",
+    "D19": "[✍️  Contrats (Sign)](odoo://ir_menu_xml_id/sign.sign_request_documents)",
+    "D20": "[🗂️  Pièces clients et contrats signés (Documents)](odoo://ir_menu_xml_id/documents.dashboard)",
+    "D21": "[⚙️  Paramètres de location](odoo://ir_menu_xml_id/sale_renting.menu_rental_settings)",
+    "D22": "[🌐  Site web de réservation](https://leon-location-pro.leon-location-pro.workers.dev)",
+    "A24": "ANALYSE",
+    "A46": "PROCHAINS RETRAITS",
+    "A47": "=ODOO.LIST.HEADER(1,\"name\")",
+    "B47": "=ODOO.LIST.HEADER(1,\"partner_id\")",
+    "C47": "=ODOO.LIST.HEADER(1,\"rental_start_date\")",
+    "D47": "=ODOO.LIST.HEADER(1,\"carrier_id\")",
+    "E47": "=ODOO.LIST.HEADER(1,\"x_docs_status\")",
+    "A48": "=ODOO.LIST(1,1,\"name\")",
+    "B48": "=ODOO.LIST(1,1,\"partner_id\")",
+    "C48": "=ODOO.LIST(1,1,\"rental_start_date\")",
+    "D48": "=ODOO.LIST(1,1,\"carrier_id\")",
+    "E48": "=ODOO.LIST(1,1,\"x_docs_status\")",
+    "A49": "=ODOO.LIST(1,2,\"name\")",
+    "B49": "=ODOO.LIST(1,2,\"partner_id\")",
+    "C49": "=ODOO.LIST(1,2,\"rental_start_date\")",
+    "D49": "=ODOO.LIST(1,2,\"carrier_id\")",
+    "E49": "=ODOO.LIST(1,2,\"x_docs_status\")",
+    "A50": "=ODOO.LIST(1,3,\"name\")",
+    "B50": "=ODOO.LIST(1,3,\"partner_id\")",
+    "C50": "=ODOO.LIST(1,3,\"rental_start_date\")",
+    "D50": "=ODOO.LIST(1,3,\"carrier_id\")",
+    "E50": "=ODOO.LIST(1,3,\"x_docs_status\")",
+    "A51": "=ODOO.LIST(1,4,\"name\")",
+    "B51": "=ODOO.LIST(1,4,\"partner_id\")",
+    "C51": "=ODOO.LIST(1,4,\"rental_start_date\")",
+    "D51": "=ODOO.LIST(1,4,\"carrier_id\")",
+    "E51": "=ODOO.LIST(1,4,\"x_docs_status\")",
+    "A52": "=ODOO.LIST(1,5,\"name\")",
+    "B52": "=ODOO.LIST(1,5,\"partner_id\")",
+    "C52": "=ODOO.LIST(1,5,\"rental_start_date\")",
+    "D52": "=ODOO.LIST(1,5,\"carrier_id\")",
+    "E52": "=ODOO.LIST(1,5,\"x_docs_status\")",
+    "A53": "=ODOO.LIST(1,6,\"name\")",
+    "B53": "=ODOO.LIST(1,6,\"partner_id\")",
+    "C53": "=ODOO.LIST(1,6,\"rental_start_date\")",
+    "D53": "=ODOO.LIST(1,6,\"carrier_id\")",
+    "E53": "=ODOO.LIST(1,6,\"x_docs_status\")",
+    "A54": "=ODOO.LIST(1,7,\"name\")",
+    "B54": "=ODOO.LIST(1,7,\"partner_id\")",
+    "C54": "=ODOO.LIST(1,7,\"rental_start_date\")",
+    "D54": "=ODOO.LIST(1,7,\"carrier_id\")",
+    "E54": "=ODOO.LIST(1,7,\"x_docs_status\")",
+    "A55": "=ODOO.LIST(1,8,\"name\")",
+    "B55": "=ODOO.LIST(1,8,\"partner_id\")",
+    "C55": "=ODOO.LIST(1,8,\"rental_start_date\")",
+    "D55": "=ODOO.LIST(1,8,\"carrier_id\")",
+    "E55": "=ODOO.LIST(1,8,\"x_docs_status\")"
+   },
+   "figures": [
+    {
+     "id": "leon-fig-1",
+     "tag": "chart",
+     "width": 236,
+     "height": 104,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 0,
+      "y": 64
+     },
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Réservations",
+       "bold": true,
+       "color": "#434343"
+      },
+      "keyValue": "Data!B2",
+      "background": "#EFF6FF",
+      "humanize": false,
+      "baseline": "Data!C2",
+      "baselineMode": "percentage",
+      "baselineDescr": {
+       "text": "vs période précédente"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965"
+     }
+    },
+    {
+     "id": "leon-fig-2",
+     "tag": "chart",
+     "width": 236,
+     "height": 104,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 246,
+      "y": 64
+     },
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Chiffre d'affaires HT",
+       "bold": true,
+       "color": "#434343"
+      },
+      "keyValue": "Data!B3",
+      "background": "#EFF6FF",
+      "humanize": false,
+      "baseline": "Data!C3",
+      "baselineMode": "percentage",
+      "baselineDescr": {
+       "text": "vs période précédente"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965"
+     }
+    },
+    {
+     "id": "leon-fig-3",
+     "tag": "chart",
+     "width": 236,
+     "height": 104,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 492,
+      "y": 64
+     },
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Panier moyen HT",
+       "bold": true,
+       "color": "#434343"
+      },
+      "keyValue": "Data!B4",
+      "background": "#EFF6FF",
+      "humanize": false,
+      "baseline": "Data!C4",
+      "baselineMode": "percentage",
+      "baselineDescr": {
+       "text": "vs période précédente"
+      },
+      "baselineColorUp": "#00A04A",
+      "baselineColorDown": "#DC6965"
+     }
+    },
+    {
+     "id": "leon-fig-4",
+     "tag": "chart",
+     "width": 236,
+     "height": 104,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 738,
+      "y": 64
+     },
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Factures impayées",
+       "bold": true,
+       "color": "#434343"
+      },
+      "keyValue": "Data!B5",
+      "background": "#FEF3F2",
+      "humanize": false
+     }
+    },
+    {
+     "id": "leon-fig-5",
+     "tag": "chart",
+     "width": 236,
+     "height": 104,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 0,
+      "y": 178
+     },
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "En location maintenant",
+       "bold": true,
+       "color": "#434343"
+      },
+      "keyValue": "Data!B6",
+      "background": "#F0FDF4",
+      "humanize": false
+     }
+    },
+    {
+     "id": "leon-fig-6",
+     "tag": "chart",
+     "width": 236,
+     "height": 104,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 246,
+      "y": 178
+     },
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Retraits à venir",
+       "bold": true,
+       "color": "#434343"
+      },
+      "keyValue": "Data!B7",
+      "background": "#F0FDF4",
+      "humanize": false
+     }
+    },
+    {
+     "id": "leon-fig-7",
+     "tag": "chart",
+     "width": 236,
+     "height": 104,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 492,
+      "y": 178
+     },
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Documents à vérifier",
+       "bold": true,
+       "color": "#434343"
+      },
+      "keyValue": "Data!B8",
+      "background": "#FFFBEB",
+      "humanize": false
+     }
+    },
+    {
+     "id": "leon-fig-8",
+     "tag": "chart",
+     "width": 236,
+     "height": 104,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 738,
+      "y": 178
+     },
+     "data": {
+      "type": "scorecard",
+      "title": {
+       "text": "Véhicules disponibles",
+       "bold": true,
+       "color": "#434343"
+      },
+      "keyValue": "Data!B10",
+      "background": "#F0FDF4",
+      "humanize": false
+     }
+    },
+    {
+     "id": "leon-fig-9",
+     "tag": "chart",
+     "width": 480,
+     "height": 300,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 0,
+      "y": 600
+     },
+     "data": {
+      "type": "odoo_bar",
+      "chartId": "leon-fig-9",
+      "title": {
+       "text": "Chiffre d'affaires par mois (HT)",
+       "bold": true,
+       "color": "#1F3A5F"
+      },
+      "background": "#FFFFFF",
+      "legendPosition": "none",
+      "metaData": {
+       "groupBy": [
+        "date:month"
+       ],
+       "measure": "price",
+       "order": null,
+       "resModel": "sale.rental.report",
+       "mode": "bar"
+      },
+      "searchParams": {
+       "comparison": null,
+       "context": {
+        "group_by": []
+       },
+       "domain": [
+        [
+         "state",
+         "=",
+         "sale"
+        ]
+       ],
+       "groupBy": [],
+       "orderBy": []
+      },
+      "dataSets": [
+       {}
+      ],
+      "verticalAxisPosition": "left",
+      "stacked": false,
+      "fieldMatching": {
+       "b1e7a0c2-0000-4000-8000-000000000001": {
+        "chain": "date",
+        "type": "date",
+        "offset": 0
+       }
+      }
+     }
+    },
+    {
+     "id": "leon-fig-10",
+     "tag": "chart",
+     "width": 480,
+     "height": 300,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 494,
+      "y": 600
+     },
+     "data": {
+      "type": "odoo_pie",
+      "chartId": "leon-fig-10",
+      "title": {
+       "text": "Réservations par véhicule",
+       "bold": true,
+       "color": "#1F3A5F"
+      },
+      "background": "#FFFFFF",
+      "legendPosition": "right",
+      "metaData": {
+       "groupBy": [
+        "product_id"
+       ],
+       "measure": "__count",
+       "order": null,
+       "resModel": "sale.rental.report",
+       "mode": "pie"
+      },
+      "searchParams": {
+       "comparison": null,
+       "context": {
+        "group_by": []
+       },
+       "domain": [
+        [
+         "state",
+         "=",
+         "sale"
+        ]
+       ],
+       "groupBy": [],
+       "orderBy": []
+      },
+      "dataSets": [
+       {}
+      ],
+      "verticalAxisPosition": "left",
+      "stacked": false,
+      "fieldMatching": {
+       "b1e7a0c2-0000-4000-8000-000000000001": {
+        "chain": "date",
+        "type": "date",
+        "offset": 0
+       }
+      }
+     }
+    },
+    {
+     "id": "leon-fig-11",
+     "tag": "chart",
+     "width": 480,
+     "height": 280,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 0,
+      "y": 914
+     },
+     "data": {
+      "type": "odoo_bar",
+      "chartId": "leon-fig-11",
+      "title": {
+       "text": "Lieux de remise les plus demandés",
+       "bold": true,
+       "color": "#1F3A5F"
+      },
+      "background": "#FFFFFF",
+      "legendPosition": "none",
+      "metaData": {
+       "groupBy": [
+        "carrier_id"
+       ],
+       "measure": "__count",
+       "order": null,
+       "resModel": "sale.order",
+       "mode": "bar"
+      },
+      "searchParams": {
+       "comparison": null,
+       "context": {
+        "group_by": []
+       },
+       "domain": [
+        [
+         "state",
+         "=",
+         "sale"
+        ],
+        [
+         "is_rental_order",
+         "=",
+         true
+        ]
+       ],
+       "groupBy": [],
+       "orderBy": []
+      },
+      "dataSets": [
+       {}
+      ],
+      "verticalAxisPosition": "left",
+      "stacked": false,
+      "fieldMatching": {
+       "b1e7a0c2-0000-4000-8000-000000000001": {
+        "chain": "date_order",
+        "type": "date",
+        "offset": 0
+       }
+      }
+     }
+    },
+    {
+     "id": "leon-fig-12",
+     "tag": "chart",
+     "width": 480,
+     "height": 280,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 494,
+      "y": 914
+     },
+     "data": {
+      "type": "odoo_pie",
+      "chartId": "leon-fig-12",
+      "title": {
+       "text": "Modes de paiement",
+       "bold": true,
+       "color": "#1F3A5F"
+      },
+      "background": "#FFFFFF",
+      "legendPosition": "right",
+      "metaData": {
+       "groupBy": [
+        "x_payment_mode"
+       ],
+       "measure": "__count",
+       "order": null,
+       "resModel": "sale.order",
+       "mode": "pie"
+      },
+      "searchParams": {
+       "comparison": null,
+       "context": {
+        "group_by": []
+       },
+       "domain": [
+        [
+         "state",
+         "=",
+         "sale"
+        ],
+        [
+         "is_rental_order",
+         "=",
+         true
+        ]
+       ],
+       "groupBy": [],
+       "orderBy": []
+      },
+      "dataSets": [
+       {}
+      ],
+      "verticalAxisPosition": "left",
+      "stacked": false,
+      "fieldMatching": {
+       "b1e7a0c2-0000-4000-8000-000000000001": {
+        "chain": "date_order",
+        "type": "date",
+        "offset": 0
+       }
+      }
+     }
+    },
+    {
+     "id": "leon-fig-13",
+     "tag": "chart",
+     "width": 974,
+     "height": 260,
+     "col": 0,
+     "row": 0,
+     "offset": {
+      "x": 0,
+      "y": 1208
+     },
+     "data": {
+      "type": "odoo_bar",
+      "chartId": "leon-fig-13",
+      "title": {
+       "text": "Options les plus vendues",
+       "bold": true,
+       "color": "#1F3A5F"
+      },
+      "background": "#FFFFFF",
+      "legendPosition": "none",
+      "metaData": {
+       "groupBy": [
+        "product_id"
+       ],
+       "measure": "product_uom_qty",
+       "order": null,
+       "resModel": "sale.order.line",
+       "mode": "bar"
+      },
+      "searchParams": {
+       "comparison": null,
+       "context": {
+        "group_by": []
+       },
+       "domain": [
+        [
+         "state",
+         "=",
+         "sale"
+        ],
+        [
+         "is_rental",
+         "=",
+         false
+        ],
+        [
+         "is_delivery",
+         "=",
+         false
+        ],
+        [
+         "order_id.is_rental_order",
+         "=",
+         true
+        ]
+       ],
+       "groupBy": [],
+       "orderBy": []
+      },
+      "dataSets": [
+       {}
+      ],
+      "verticalAxisPosition": "left",
+      "stacked": false,
+      "fieldMatching": {}
+     }
+    }
+   ],
+   "conditionalFormats": [],
+   "dataValidationRules": [],
+   "tables": [],
+   "areGridLinesVisible": false,
+   "isVisible": true,
+   "headerGroups": {
+    "ROW": [],
+    "COL": []
+   },
+   "comments": {}
+  },
+  {
+   "id": "leon-data",
+   "name": "Data",
+   "colNumber": 4,
+   "rowNumber": 20,
+   "cols": {},
+   "rows": {},
+   "merges": [],
+   "styles": {},
+   "formats": {
+    "B3:C5": 1
+   },
+   "borders": {},
+   "cells": {
+    "A1": "Indicateur",
+    "B1": "Période",
+    "C1": "Période précédente",
+    "A2": "Réservations",
+    "B2": "=IFERROR(PIVOT.VALUE(1,\"__count\",\"state\",\"sale\"),0)",
+    "C2": "=IFERROR(PIVOT.VALUE(2,\"__count\",\"state\",\"sale\"),0)",
+    "A3": "Chiffre d'affaires HT",
+    "B3": "=IFERROR(PIVOT.VALUE(1,\"price\",\"state\",\"sale\"),0)",
+    "C3": "=IFERROR(PIVOT.VALUE(2,\"price\",\"state\",\"sale\"),0)",
+    "A4": "Panier moyen",
+    "B4": "=IFERROR(B3/B2,0)",
+    "C4": "=IFERROR(C3/C2,0)",
+    "A5": "Factures impayées",
+    "B5": "=IFERROR(PIVOT.VALUE(5,\"amount_residual_signed\"),0)",
+    "A6": "En location",
+    "B6": "=IFERROR(PIVOT.VALUE(3,\"__count\",\"rental_status\",\"return\"),0)",
+    "A7": "Retraits à venir",
+    "B7": "=IFERROR(PIVOT.VALUE(3,\"__count\",\"rental_status\",\"pickup\"),0)",
+    "A8": "Documents à vérifier",
+    "B8": "=IFERROR(PIVOT.VALUE(4,\"__count\",\"x_docs_status\",\"received\"),0)",
+    "A9": "Documents manquants",
+    "B9": "=IFERROR(PIVOT.VALUE(4,\"__count\",\"x_docs_status\",\"missing\"),0)",
+    "A10": "Véhicules disponibles",
+    "B10": "=IFERROR(PIVOT.VALUE(6,\"__count\",\"state_id\",3),0)",
+    "A11": "Véhicules au parc",
+    "B11": "=IFERROR(PIVOT.VALUE(6,\"__count\"),0)"
+   },
+   "figures": [],
+   "conditionalFormats": [],
+   "dataValidationRules": [],
+   "tables": [],
+   "areGridLinesVisible": true,
+   "isVisible": false,
+   "headerGroups": {
+    "ROW": [],
+    "COL": []
+   },
+   "comments": {}
+  }
+ ],
+ "styles": {
+  "1": {
+   "bold": true,
+   "fontSize": 22,
+   "textColor": "#1F3A5F"
+  },
+  "2": {
+   "italic": true,
+   "textColor": "#6B7280"
+  },
+  "3": {
+   "bold": true,
+   "fontSize": 13,
+   "textColor": "#FFFFFF",
+   "fillColor": "#1F3A5F"
+  },
+  "4": {
+   "fontSize": 11,
+   "verticalAlign": "middle"
+  },
+  "5": {
+   "bold": true,
+   "fillColor": "#B8CCE4",
+   "textColor": "#1F3A5F"
+  }
+ },
+ "formats": {
+  "1": "#,##0 [$€]"
+ },
+ "borders": {},
+ "revisionId": "START_REVISION",
+ "uniqueFigureIds": true,
+ "settings": {
+  "locale": {
+   "name": "French",
+   "code": "fr_FR",
+   "thousandsSeparator": " ",
+   "decimalSeparator": ",",
+   "dateFormat": "dd/mm/yyyy",
+   "timeFormat": "hh:mm:ss",
+   "formulaArgSeparator": ";",
+   "weekStart": 1
+  }
+ },
+ "pivots": {
+  "1": {
+   "type": "ODOO",
+   "id": "1",
+   "formulaId": "1",
+   "name": "kpi 1",
+   "model": "sale.rental.report",
+   "domain": [
+    [
+     "state",
+     "=",
+     "sale"
+    ]
+   ],
+   "context": {
+    "group_by": []
+   },
+   "rows": [
+    {
+     "fieldName": "state"
+    }
+   ],
+   "columns": [],
+   "measures": [
+    {
+     "id": "__count",
+     "fieldName": "__count"
+    },
+    {
+     "id": "price",
+     "fieldName": "price"
+    }
+   ],
+   "sortedColumn": null,
+   "fieldMatching": {
+    "b1e7a0c2-0000-4000-8000-000000000001": {
+     "chain": "date",
+     "type": "date",
+     "offset": 0
+    }
+   }
+  },
+  "2": {
+   "type": "ODOO",
+   "id": "2",
+   "formulaId": "2",
+   "name": "kpi 2",
+   "model": "sale.rental.report",
+   "domain": [
+    [
+     "state",
+     "=",
+     "sale"
+    ]
+   ],
+   "context": {
+    "group_by": []
+   },
+   "rows": [
+    {
+     "fieldName": "state"
+    }
+   ],
+   "columns": [],
+   "measures": [
+    {
+     "id": "__count",
+     "fieldName": "__count"
+    },
+    {
+     "id": "price",
+     "fieldName": "price"
+    }
+   ],
+   "sortedColumn": null,
+   "fieldMatching": {
+    "b1e7a0c2-0000-4000-8000-000000000001": {
+     "chain": "date",
+     "type": "date",
+     "offset": -1
+    }
+   }
+  },
+  "3": {
+   "type": "ODOO",
+   "id": "3",
+   "formulaId": "3",
+   "name": "kpi 3",
+   "model": "sale.order",
+   "domain": [
+    [
+     "is_rental_order",
+     "=",
+     true
+    ]
+   ],
+   "context": {
+    "group_by": []
+   },
+   "rows": [
+    {
+     "fieldName": "rental_status"
+    }
+   ],
+   "columns": [],
+   "measures": [
+    {
+     "id": "__count",
+     "fieldName": "__count"
+    }
+   ],
+   "sortedColumn": null,
+   "fieldMatching": {}
+  },
+  "4": {
+   "type": "ODOO",
+   "id": "4",
+   "formulaId": "4",
+   "name": "kpi 4",
+   "model": "sale.order",
+   "domain": [
+    [
+     "state",
+     "=",
+     "sale"
+    ],
+    [
+     "rental_status",
+     "in",
+     [
+      "pickup",
+      "return"
+     ]
+    ]
+   ],
+   "context": {
+    "group_by": []
+   },
+   "rows": [
+    {
+     "fieldName": "x_docs_status"
+    }
+   ],
+   "columns": [],
+   "measures": [
+    {
+     "id": "__count",
+     "fieldName": "__count"
+    }
+   ],
+   "sortedColumn": null,
+   "fieldMatching": {}
+  },
+  "5": {
+   "type": "ODOO",
+   "id": "5",
+   "formulaId": "5",
+   "name": "kpi 5",
+   "model": "account.move",
+   "domain": [
+    [
+     "move_type",
+     "=",
+     "out_invoice"
+    ],
+    [
+     "state",
+     "=",
+     "posted"
+    ],
+    [
+     "payment_state",
+     "in",
+     [
+      "not_paid",
+      "partial"
+     ]
+    ]
+   ],
+   "context": {
+    "group_by": []
+   },
+   "rows": [],
+   "columns": [],
+   "measures": [
+    {
+     "id": "amount_residual_signed",
+     "fieldName": "amount_residual_signed"
+    }
+   ],
+   "sortedColumn": null,
+   "fieldMatching": {}
+  },
+  "6": {
+   "type": "ODOO",
+   "id": "6",
+   "formulaId": "6",
+   "name": "kpi 6",
+   "model": "fleet.vehicle",
+   "domain": [],
+   "context": {
+    "group_by": []
+   },
+   "rows": [
+    {
+     "fieldName": "state_id"
+    }
+   ],
+   "columns": [],
+   "measures": [
+    {
+     "id": "__count",
+     "fieldName": "__count"
+    }
+   ],
+   "sortedColumn": null,
+   "fieldMatching": {}
+  }
+ },
+ "pivotNextId": 7,
+ "customTableStyles": {},
+ "globalFilters": [
+  {
+   "id": "b1e7a0c2-0000-4000-8000-000000000001",
+   "type": "date",
+   "label": "Période",
+   "defaultValue": "last_30_days"
+  }
+ ],
+ "lists": {
+  "1": {
+   "id": "1",
+   "name": "Prochains retraits",
+   "model": "sale.order",
+   "columns": [
+    "name",
+    "partner_id",
+    "rental_start_date",
+    "carrier_id",
+    "x_docs_status"
+   ],
+   "domain": [
+    [
+     "is_rental_order",
+     "=",
+     true
+    ],
+    [
+     "rental_status",
+     "=",
+     "pickup"
+    ]
+   ],
+   "context": {},
+   "orderBy": [
+    {
+     "name": "rental_start_date",
+     "asc": true
+    }
+   ],
+   "fieldMatching": {}
+  }
+ },
+ "listNextId": 2,
+ "chartOdooMenusReferences": {}
+}

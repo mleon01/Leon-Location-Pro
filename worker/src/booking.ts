@@ -10,7 +10,6 @@ import { availableQty, getCatalog, parseQuoteRequest, quote } from './shop'
 import { euros, HttpError, localLabel, signRef } from './util'
 
 const PAYMENT_LABEL: Record<PaymentMode, string> = { card: 'Carte bancaire (1×)', alma3: 'Alma 3×', alma4: 'Alma 4×' }
-const DEPOSIT_LABEL: Record<DepositMode, string> = { gando: 'en ligne avec Gando', tpe: 'empreinte TPE à la remise des clés' }
 
 const isSimulation = (env: Env) => (env.PAYMENT_MODE || 'simulation') === 'simulation'
 
@@ -159,6 +158,29 @@ export async function orderSummary(env: Env, orderId: number): Promise<OrderSumm
   }
 }
 
+// ─── Informations véhicule pour le contrat (fiche du Parc automobile liée à la variante) ───
+
+const FUEL_LABEL: Record<string, string> = {
+  gasoline: 'Essence', diesel: 'Diesel', electric: 'Électrique', full_hybrid: 'Hybride',
+  plug_in_hybrid_diesel: 'Hybride rechargeable', plug_in_hybrid_gasoline: 'Hybride rechargeable', lpg: 'GPL', hydrogen: 'Hydrogène',
+}
+
+async function vehicleInfo(env: Env, variantId: number | undefined) {
+  const empty = { plate: 'Attribuée à la remise des clés', fuel: '—', color: '—', category: '—' }
+  if (!variantId) return empty
+  const [variant] = await execute<{ x_vehicule_parc_id: [number, string] | false; product_tmpl_id: [number, string] }[]>(env, 'product.product', 'read', [[variantId], ['x_vehicule_parc_id', 'product_tmpl_id']])
+  if (!variant?.x_vehicule_parc_id) return { ...empty, category: variant?.product_tmpl_id[1] ?? '—' }
+  const [v] = await execute<{ license_plate: string; fuel_type: string | false; color: string | false; category_id: [number, string] | false }[]>(
+    env, 'fleet.vehicle', 'read', [[variant.x_vehicule_parc_id[0]], ['license_plate', 'fuel_type', 'color', 'category_id']],
+  )
+  return {
+    plate: v.license_plate || empty.plate,
+    fuel: v.fuel_type ? (FUEL_LABEL[v.fuel_type] ?? v.fuel_type) : '—',
+    color: v.color || '—',
+    category: v.category_id ? v.category_id[1] : variant.product_tmpl_id[1],
+  }
+}
+
 // ─── 3. Paiement reçu → confirmation, facture, contrat, e-mail ───
 
 export async function simulatePayment(env: Env, orderId: number): Promise<OrderSummary> {
@@ -211,7 +233,9 @@ export async function finalize(env: Env, orderId: number) {
   try {
     const [partner] = await execute<{ name: string; email: string; phone: string; contact_address: string }[]>(env, 'res.partner', 'read', [[o.partner_id[0]], ['name', 'email', 'phone', 'contact_address']])
     const rental = lines.find((l) => l.is_rental)
-    const lots = rental ? await execute<{ name: string }[]>(env, 'stock.lot', 'search_read', [[['product_id', '=', rental.product_id[0]]]], { fields: ['name'] }) : []
+    const vehicle = await vehicleInfo(env, rental?.product_id[0])
+    // « M. Jean Payet » → prénom « Jean », nom « Payet »
+    const [firstName, ...lastName] = partner.name.replace(/^(M\.|Mme)\s+/, '').split(' ')
     const sign = await createSignRequest(env, {
       orderId,
       orderName: o.name,
@@ -219,17 +243,17 @@ export async function finalize(env: Env, orderId: number) {
       folderId: await ids.contractsFolder(),
       data: {
         orderName: o.name,
-        customer: { name: partner.name, email: partner.email, phone: partner.phone || '', address: partner.contact_address.replace(/\s*\n\s*/g, ', ').replace(/^[^,]*,\s*/, '') },
-        vehicle: rental?.product_id[1] ?? '',
-        plate: lots.length === 1 ? lots[0].name : 'Attribuée à la remise des clés',
+        customer: {
+          firstName, lastName: lastName.join(' '), email: partner.email, phone: partner.phone || '',
+          address: partner.contact_address.replace(/\s*\n\s*/g, ', ').replace(/^[^,]*,\s*/, ''),
+        },
+        vehicle: { product: rental?.product_id[1] ?? '', ...vehicle },
         start: localLabel(o.rental_start_date, tz),
         end: localLabel(o.rental_return_date, tz),
-        pickupPlace: [o.carrier_id ? o.carrier_id[1] : '', o.x_lieu_detail || ''].filter(Boolean).join(' — '),
+        days: rental?.name.match(/(\d+)\s*Jours?/i)?.[1] ?? '',
+        pickupPlace: o.carrier_id ? o.carrier_id[1] : '',
+        customPlace: o.x_lieu_detail || '—',
         options: lines.filter((l) => !l.is_rental && !l.is_delivery).map((l) => (l.product_uom_qty > 1 ? `${l.product_id[1]} × ${l.product_uom_qty}` : l.product_id[1])),
-        total: euros(o.amount_total),
-        paymentMode: PAYMENT_LABEL[mode],
-        deposit: euros(o.x_caution_amount),
-        depositMode: DEPOSIT_LABEL[o.x_caution_mode || 'tpe'],
       },
     })
     await execute(env, 'sale.order', 'write', [[orderId], { x_sign_request_id: sign.requestId, x_contract_url: sign.customerUrl }])

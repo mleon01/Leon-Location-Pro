@@ -1,144 +1,273 @@
-// Contrat de location pré-rempli (PDF) + demande de signature Odoo Sign.
-// Le contrat est créé dès la confirmation : le personnel le complète et le fait
-// signer sur la tablette au moment de l'état des lieux.
-import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage } from 'pdf-lib'
+// Contrat de location pré-rempli (PDF, mise en page du modèle LEON Location PRO)
+// + demande de signature Odoo Sign.
+// Page 1 « Début de location » (complétée et signée sur la tablette), pages suivantes : conditions générales.
+import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage, type RGB } from 'pdf-lib'
+import { CGV } from './cgv'
+import { LOGO_PNG_BASE64 } from './logo'
 import { execute, type Env } from './odoo'
 import { toBase64 } from './util'
 
-export interface ContractData {
-  orderName: string
-  customer: { name: string; email: string; phone: string; address: string }
-  vehicle: string
-  plate: string
-  start: string
-  end: string
-  pickupPlace: string
-  options: string[]
-  total: string
-  paymentMode: string
-  deposit: string
-  depositMode: string
+/** Coordonnées imprimées sur le contrat — à modifier ici si besoin. */
+export const COMPANY = {
+  name: 'LEON LOCATION PRO',
+  tagline: 'Voyagez sans limites, nous avons la voiture qu’il vous faut.',
+  address: ['8 ruelle boulot', '97400 SAINT DENIS'],
+  siret: '943 641 910',
+  phones: '06 92 94 55 97 ou 06 93 50 28 23',
+  assistance: '+262 2 62 20 48 48',
+  signatory: 'Mathieu LEON',
 }
 
-/** Zone à remplir dans Odoo Sign (coordonnées en points PDF, origine en haut à gauche). */
+export interface ContractData {
+  orderName: string
+  customer: { firstName: string; lastName: string; email: string; phone: string; address: string }
+  vehicle: { product: string; plate: string; fuel: string; color: string; category: string }
+  start: string
+  end: string
+  days: string
+  pickupPlace: string
+  customPlace: string
+  options: string[]
+}
+
+/** Zone à remplir dans Odoo Sign (points PDF, origine en haut à gauche). */
 interface Field {
   kind: 'signature' | 'text' | 'textarea' | 'date'
   role: 'Customer' | 'Employee'
   name: string
+  page: number
   x: number
   y: number
   w: number
   h: number
+  required: boolean
 }
 
 const W = 595.28
 const H = 841.89
-const MARGIN = 48
-const BLUE = rgb(0, 0.667, 1)
-const INK = rgb(0.05, 0.05, 0.05)
-const GREY = rgb(0.42, 0.45, 0.5)
+const M = 48
+const NAVY = rgb(0.12, 0.23, 0.37)
+const BAND = rgb(0.2, 0.25, 0.3)
+const BAND_TEXT = rgb(0.86, 0.9, 0.94)
+const LIGHT = rgb(0.72, 0.8, 0.89)
+const BORDER = rgb(0.62, 0.66, 0.71)
+const INK = rgb(0.1, 0.1, 0.1)
+const GREY = rgb(0.38, 0.4, 0.44)
 
 /** Les polices PDF standard ne couvrent que l'alphabet latin : on remplace le reste. */
-const EXTRA = new Set([...'€—–‘’“”•…«»ŒœŸ'])
-const safe = (s: string) => [...s.normalize('NFC')].map((c) => (c.charCodeAt(0) <= 0xff || EXTRA.has(c) ? c : '?')).join('')
+const EXTRA = new Set([...'€—–‘’“”•…«»ŒœŸ−'])
+const safe = (s: string) => [...s.normalize('NFC')].map((c) => (c === '−' ? '-' : c.charCodeAt(0) <= 0xff || EXTRA.has(c) ? c : '?')).join('')
+
+function wrap(text: string, font: PDFFont, size: number, width: number): string[] {
+  const lines: string[] = []
+  let line = ''
+  for (const word of safe(text).split(/\s+/)) {
+    const next = line ? `${line} ${word}` : word
+    if (font.widthOfTextAtSize(next, size) > width && line) {
+      lines.push(line)
+      line = word
+    } else line = next
+  }
+  if (line) lines.push(line)
+  return lines
+}
 
 export async function buildContractPdf(d: ContractData): Promise<{ pdf: Uint8Array; fields: Field[] }> {
   const doc = await PDFDocument.create()
   doc.setTitle(`Contrat de location ${d.orderName}`)
-  const page = doc.addPage([W, H])
-  const regular = await doc.embedFont(StandardFonts.Helvetica)
-  const bold = await doc.embedFont(StandardFonts.HelveticaBold)
-  let y = MARGIN
-
-  const text = (p: PDFPage, s: string, x: number, top: number, size = 9.5, font: PDFFont = regular, color = INK) =>
-    p.drawText(safe(s), { x, y: H - top - size, size, font, color })
-
-  // En-tête
-  page.drawRectangle({ x: 0, y: H - 6, width: W, height: 6, color: BLUE })
-  text(page, 'LEON LOCATION PRO', MARGIN, y, 18, bold)
-  text(page, 'Location de véhicules — La Réunion', MARGIN, y + 22, 9, regular, GREY)
-  text(page, 'CONTRAT DE LOCATION', W - MARGIN - bold.widthOfTextAtSize('CONTRAT DE LOCATION', 13), y + 2, 13, bold, BLUE)
-  text(page, `N° ${d.orderName}`, W - MARGIN - bold.widthOfTextAtSize(`N° ${d.orderName}`, 10), y + 20, 10, bold)
-  y += 52
-
-  const section = (title: string) => {
-    page.drawRectangle({ x: MARGIN, y: H - y - 16, width: W - 2 * MARGIN, height: 16, color: rgb(0.94, 0.96, 0.98) })
-    text(page, title.toUpperCase(), MARGIN + 6, y + 3.5, 9, bold, BLUE)
-    y += 22
+  const f = {
+    regular: await doc.embedFont(StandardFonts.Helvetica),
+    bold: await doc.embedFont(StandardFonts.HelveticaBold),
+    italic: await doc.embedFont(StandardFonts.HelveticaOblique),
   }
-  const row = (label: string, value: string, x = MARGIN, labelWidth = 110) => {
-    text(page, label, x, y, 9, regular, GREY)
-    text(page, value, x + labelWidth, y, 9.5, bold)
-  }
-
-  section('Le locataire')
-  row('Nom', d.customer.name); y += 14
-  row('Adresse', d.customer.address); y += 14
-  row('Téléphone', d.customer.phone)
-  row('E-mail', d.customer.email, 300, 50); y += 22
-
-  section('Le véhicule et la location')
-  row('Véhicule', d.vehicle); y += 14
-  row('Immatriculation', d.plate); y += 14
-  row('Départ', d.start)
-  row('Retour', d.end, 300, 50); y += 14
-  row('Lieu de remise', d.pickupPlace); y += 14
-  row('Options', d.options.length ? d.options.join(', ') : 'Aucune'); y += 22
-
-  section('Prix, paiement et caution')
-  row('Montant TTC', d.total)
-  row('Paiement', d.paymentMode, 300, 50); y += 14
-  row('Caution', `${d.deposit} — ${d.depositMode} (non débitée sauf dommage)`); y += 22
-
-  // État des lieux au départ : complété par le personnel sur la tablette
-  section('État des lieux au départ (complété à la remise des clés)')
+  const logo = await doc.embedPng(Uint8Array.from(atob(LOGO_PNG_BASE64), (c) => c.charCodeAt(0)))
   const fields: Field[] = []
-  text(page, 'Kilométrage', MARGIN, y + 4, 9, regular, GREY)
-  fields.push({ kind: 'text', role: 'Employee', name: 'Kilométrage départ', x: MARGIN + 110, y, w: 120, h: 18 })
-  text(page, 'Carburant', 300, y + 4, 9, regular, GREY)
-  fields.push({ kind: 'text', role: 'Employee', name: 'Niveau de carburant', x: 360, y, w: 140, h: 18 })
-  y += 26
-  text(page, 'Observations', MARGIN, y + 4, 9, regular, GREY)
-  fields.push({ kind: 'textarea', role: 'Employee', name: 'Observations état des lieux', x: MARGIN + 110, y, w: W - 2 * MARGIN - 110, h: 56 })
-  y += 64
-  text(page, 'Les photos de l\'état des lieux sont jointes au dossier et envoyées au locataire avec ce contrat.', MARGIN, y, 8, regular, GREY)
-  y += 22
 
-  section('Conditions principales')
-  const terms = [
-    'Le locataire déclare être titulaire d\'un permis de conduire valide et présente une pièce d\'identité en cours de validité.',
-    'Le véhicule est restitué à la date, à l\'heure et au lieu convenus, avec le même niveau de carburant.',
-    'La caution est restituée sous 5 à 7 jours ouvrés après le retour, sous réserve qu\'aucun dommage ne soit constaté.',
-    'Annulation gratuite jusqu\'à 24 h avant le départ. Les conditions générales de vente complètes s\'appliquent.',
-  ]
-  for (const t of terms) {
-    text(page, `•  ${t}`, MARGIN, y, 8.5)
-    y += 13
+  const text = (p: PDFPage, s: string, x: number, top: number, size: number, font: PDFFont = f.regular, color: RGB = INK) =>
+    p.drawText(safe(s), { x, y: H - top - size * 0.8, size, font, color })
+  const centered = (p: PDFPage, s: string, cx: number, top: number, size: number, font: PDFFont = f.regular, color: RGB = INK) =>
+    text(p, s, cx - font.widthOfTextAtSize(safe(s), size) / 2, top, size, font, color)
+  const rect = (p: PDFPage, x: number, top: number, w: number, h: number, opts: { fill?: RGB; border?: RGB; width?: number } = {}) =>
+    p.drawRectangle({ x, y: H - top - h, width: w, height: h, color: opts.fill, borderColor: opts.border, borderWidth: opts.border ? (opts.width ?? 0.6) : 0 })
+  const bands = (p: PDFPage, title: string, size: number) => {
+    rect(p, 0, 0, W, 62, { fill: BAND })
+    for (let i = 0; i < 6; i++) rect(p, 0, 62 - i * 10, W, 1, { fill: rgb(0.25 + i * 0.01, 0.3, 0.36) })
+    centered(p, title, W / 2, 22, size, f.regular, BAND_TEXT)
+    rect(p, 0, H - 26, W, 26, { fill: BAND })
   }
-  y += 14
 
-  section('Signatures')
-  const half = (W - 2 * MARGIN - 20) / 2
-  text(page, 'Pour LEON Location PRO', MARGIN, y, 9, bold)
-  text(page, 'Le locataire — « Lu et approuvé »', MARGIN + half + 20, y, 9, bold)
-  y += 16
-  fields.push({ kind: 'signature', role: 'Employee', name: 'Signature loueur', x: MARGIN, y, w: half, h: 60 })
-  fields.push({ kind: 'signature', role: 'Customer', name: 'Signature locataire', x: MARGIN + half + 20, y, w: half, h: 60 })
-  y += 66
-  text(page, 'Date', MARGIN + half + 20, y + 4, 9, regular, GREY)
-  fields.push({ kind: 'date', role: 'Customer', name: 'Date de signature', x: MARGIN + half + 60, y, w: 120, h: 18 })
-
-  for (const f of fields) {
-    page.drawRectangle({ x: f.x, y: H - f.y - f.h, width: f.w, height: f.h, borderColor: rgb(0.8, 0.84, 0.88), borderWidth: 0.6 })
+  /** Tableau : bandeau de titres bleu clair + une ligne de valeurs (texte, ou zone à remplir sur la tablette). */
+  const table = (p: PDFPage, page: number, title: string, top: number, x0: number, cols: { label: string; width: number; value?: string; field?: Omit<Field, 'page' | 'x' | 'y' | 'w' | 'h'> }[], rowH = 22) => {
+    text(p, title, x0, top, 7.5, f.bold)
+    let x = x0
+    const headTop = top + 11
+    for (const c of cols) {
+      rect(p, x, headTop, c.width, 18, { fill: LIGHT, border: BORDER })
+      const lines = wrap(c.label, f.regular, 7.5, c.width - 6)
+      lines.forEach((l, i) => centered(p, l, x + c.width / 2, headTop + (lines.length > 1 ? 2.5 : 6) + i * 8, 7.5))
+      rect(p, x, headTop + 18, c.width, rowH, { border: BORDER })
+      if (c.value !== undefined) {
+        const lines2 = wrap(c.value || '—', f.regular, 7.5, c.width - 6).slice(0, 2)
+        lines2.forEach((l, i) => centered(p, l, x + c.width / 2, headTop + 18 + (lines2.length > 1 ? 4 : rowH / 2 - 3.5) + i * 9, 7.5))
+      }
+      if (c.field) fields.push({ ...c.field, page, x: x + 3, y: headTop + 21, w: c.width - 6, h: rowH - 6 })
+      x += c.width
+    }
+    return headTop + 18 + rowH
   }
-  text(page, 'LEON Location PRO — La Réunion (974)', MARGIN, H - 30, 7.5, regular, GREY)
 
-  return { pdf: await doc.save(), fields }
+  // ─── Page 1 : début de location ───
+  const p1 = doc.addPage([W, H])
+  bands(p1, 'CONTRAT DE LOCATION', 22)
+  p1.drawImage(logo, { x: W - M - 165, y: H - 30 - 165, width: 165, height: 165 })
+  text(p1, COMPANY.name, M, 76, 26, f.bold, NAVY)
+  text(p1, COMPANY.tagline, M, 108, 7.5, f.italic)
+  ;[...COMPANY.address, `Numéro de SIRET : ${COMPANY.siret}`, `Téléphone : ${COMPANY.phones}`].forEach((l, i) => text(p1, l, M, 124 + i * 10.5, 7.5))
+
+  text(p1, 'Contrat de location pour :', M, 184, 7.5, f.bold)
+  const c = d.customer
+  ;[['Nom :', c.lastName], ['Prénom :', c.firstName], ['Adresse mail :', c.email], ['Téléphone :', c.phone], ['Adresse :', c.address]].forEach(([k, v], i) => {
+    text(p1, k, M, 198 + i * 10.5, 7.5)
+    text(p1, v, M + 92, 198 + i * 10.5, 7.5)
+  })
+
+  rect(p1, 360, 204, W - M - 360, 34, { border: INK, width: 1.1 })
+  centered(p1, 'ASSISTANCE 24H /24', (360 + W - M) / 2, 212, 8, f.bold)
+  centered(p1, `N° ${COMPANY.assistance}`, (360 + W - M) / 2, 224, 8, f.bold)
+
+  const licence = (label: string, x: number, top: number, name: string, required: boolean, labelW: number) => {
+    text(p1, label, x, top + 2, 7.5)
+    fields.push({ kind: 'text', role: 'Employee', name, page: 1, x: x + labelW, y: top - 1, w: 112, h: 12, required })
+  }
+  licence('N° de permis de conduire :', M, 266, 'N° de permis de conduire', true, 98)
+  licence('Date de délivrance :', M, 280, 'Date de délivrance du permis', true, 98)
+  licence('N° de permis 2nd conducteur :', 300, 266, 'N° de permis 2nd conducteur', false, 120)
+  licence('Date de délivrance 2nd conducteur :', 300, 280, 'Date de délivrance 2nd conducteur', false, 120)
+
+  centered(p1, 'Début de location', W / 2, 306, 17, f.bold)
+
+  const full = W - 2 * M
+  let y = table(p1, 1, 'Informations sur la location :', 334, M, [
+    { label: 'Référence du contrat', width: full * 0.17, value: d.orderName },
+    { label: 'Début de la location', width: full * 0.23, value: d.start },
+    { label: 'Fin de la location', width: full * 0.23, value: d.end },
+    { label: 'Nombre de jours', width: full * 0.17, value: d.days },
+    { label: 'Date du contrat', width: full * 0.2, field: { kind: 'date', role: 'Customer', name: 'Date du contrat', required: true } },
+  ])
+  y = table(p1, 1, 'Information sur le véhicule :', y + 12, M, [
+    { label: 'Véhicule', width: full * 0.24, value: d.vehicle.product },
+    { label: 'Immatriculation', width: full * 0.18, value: d.vehicle.plate },
+    { label: 'Type Carburant', width: full * 0.2, value: d.vehicle.fuel },
+    { label: 'Couleur', width: full * 0.18, value: d.vehicle.color },
+    { label: 'Catégorie', width: full * 0.2, value: d.vehicle.category },
+  ])
+  y = table(p1, 1, 'Options de locations :', y + 12, M, [
+    { label: 'Lieu spécifique', width: full * 0.33, value: d.pickupPlace },
+    { label: 'Lieu personnalisé', width: full * 0.34, value: d.customPlace },
+    { label: 'Options du véhicule', width: full * 0.33, value: d.options.join(', ') || 'Aucune' },
+  ], 26)
+  const check = (label: string, w: number) => ({ label, width: full * w, field: { kind: 'text' as const, role: 'Employee' as const, name: label, required: true } })
+  y = table(p1, 1, 'Vérification du véhicule :', y + 12, M, [
+    check('Roue de secours', 0.15), check('Niveau de liquide', 0.17), check('Kit de sécurité', 0.19),
+    check('Outils', 0.16), check('Parcel Shelf', 0.16), check('Éléments sous capot', 0.17),
+  ])
+
+  // Kilométrage / carburant + observations, et schéma du véhicule
+  const kmTop = y + 18
+  const kmEnd = table(p1, 1, '', kmTop - 11, M, [
+    { label: 'Kilométrage départ', width: 120, field: { kind: 'text', role: 'Employee', name: 'Kilométrage départ', required: true } },
+    { label: 'Carburant au Départ', width: 120, field: { kind: 'text', role: 'Employee', name: 'Carburant au départ', required: true } },
+  ])
+  text(p1, 'Dommages constatés au départ :', M, kmEnd + 8, 7.5, f.bold)
+  rect(p1, M, kmEnd + 20, 240, 44, { border: BORDER })
+  fields.push({ kind: 'textarea', role: 'Employee', name: 'Dommages constatés au départ', page: 1, x: M + 3, y: kmEnd + 23, w: 234, h: 38, required: false })
+  drawCarDiagram(p1, 345, kmTop - 6, 200, 118)
+
+  // Déclaration + signatures
+  const decl = 'Je déclare avoir reçu et lu le présent contrat et ses conditions générales. En signant ce document, j’accepte les termes du contrat et de ses conditions générales. Je suis d’accord avec l’état du véhicule tel qu’indiqué sur la fiche de départ et reconnais son exactitude. En cas de paiement par carte de crédit, j’autorise, par ma signature, à débiter ma carte de crédit de la totalité du montant ainsi que de tous frais additionnels liés au contrat, à des infractions ou à des dommages occasionnés lors de cette location. Je déclare être responsable de toutes les infractions au code de la route pendant la période de location du véhicule.'
+  const declTop = 712
+  wrap(decl, f.italic, 6, full).forEach((l, i) => text(p1, l, M, declTop + i * 7.5, 6, f.italic, GREY))
+  fields.push({ kind: 'signature', role: 'Employee', name: 'Signature du loueur', page: 1, x: M, y: 748, w: 140, h: 36, required: true })
+  fields.push({ kind: 'signature', role: 'Customer', name: 'Signature du locataire', page: 1, x: W - M - 170, y: 748, w: 170, h: 36, required: true })
+  text(p1, COMPANY.signatory, M, 792, 7.5)
+  centered(p1, '1', W / 2, 792, 7.5)
+  text(p1, `${c.firstName} ${c.lastName.toUpperCase()}`, W - M - 170, 792, 7.5, f.bold)
+  fields.push({ kind: 'date', role: 'Customer', name: 'Date de signature', page: 1, x: W - M - 60, y: 789, w: 60, h: 12, required: true })
+
+  // ─── Pages suivantes : conditions générales sur deux colonnes ───
+  const colW = (full - 20) / 2
+  const top0 = 92
+  const bottom = H - 60
+  let pageNo = 1
+  let page = newCgvPage()
+  let col = 0
+  let cy = top0
+  function newCgvPage() {
+    const p = doc.addPage([W, H])
+    pageNo++
+    bands(p, 'CONTRAT DE LOCATION : CONDITIONS GÉNÉRALES', 17)
+    centered(p, String(pageNo), W / 2, H - 46, 7.5, f.regular, GREY)
+    return p
+  }
+  const ensure = (h: number) => {
+    if (cy + h <= bottom) return
+    if (col === 0) {
+      col = 1
+      cy = top0
+    } else {
+      page = newCgvPage()
+      col = 0
+      cy = top0
+    }
+  }
+  const cx = () => M + col * (colW + 20)
+  for (const article of CGV) {
+    const titleLines = wrap(article.title, f.bold, 8.5, colW)
+    ensure(18 + titleLines.length * 11)
+    cy += 6
+    for (const t of titleLines) {
+      text(page, t, cx(), cy, 8.5, f.bold, NAVY)
+      page.drawLine({ start: { x: cx(), y: H - cy - 9 }, end: { x: cx() + f.bold.widthOfTextAtSize(t, 8.5), y: H - cy - 9 }, thickness: 0.5, color: NAVY })
+      cy += 11
+    }
+    cy += 4
+    for (const para of article.body) {
+      const bullet = para.startsWith('• ')
+      const indent = bullet ? 10 : 0
+      const lines = wrap(bullet ? para.slice(2) : para, f.regular, 7.3, colW - indent)
+      for (let i = 0; i < lines.length; i++) {
+        ensure(9.5)
+        if (bullet && i === 0) text(page, '•', cx() + 2, cy, 7.3)
+        text(page, lines[i], cx() + indent, cy, 7.3)
+        cy += 9.5
+      }
+      cy += 4
+    }
+  }
+
+  return { pdf: await doc.save({ useObjectStreams: false }), fields }
+
+  /** Schéma de véhicule vu de dessus (pour repérer les dommages, comme sur la fiche papier). */
+  function drawCarDiagram(p: PDFPage, x: number, top: number, w: number, h: number) {
+    const s = (px: number, py: number) => ({ x: x + px * w, y: H - (top + py * h) })
+    const line = (a: [number, number], b: [number, number]) => p.drawLine({ start: s(...a), end: s(...b), thickness: 0.8, color: GREY })
+    const box = (x1: number, y1: number, x2: number, y2: number) => { line([x1, y1], [x2, y1]); line([x2, y1], [x2, y2]); line([x2, y2], [x1, y2]); line([x1, y2], [x1, y1]) }
+    box(0.08, 0.18, 0.92, 0.82) // carrosserie
+    box(0.2, 0.26, 0.36, 0.74) // pare-brise
+    box(0.72, 0.28, 0.82, 0.72) // lunette arrière
+    box(0.36, 0.22, 0.72, 0.78) // toit
+    line([0.54, 0.18], [0.54, 0.82])
+    for (const [cxx, cyy] of [[0.25, 0.1], [0.75, 0.1], [0.25, 0.9], [0.75, 0.9]] as [number, number][]) {
+      p.drawEllipse({ ...s(cxx, cyy), xScale: w * 0.06, yScale: h * 0.08, borderColor: GREY, borderWidth: 0.8 })
+    }
+    p.drawEllipse({ ...s(0.04, 0.5), xScale: w * 0.025, yScale: h * 0.12, borderColor: GREY, borderWidth: 0.8 })
+    p.drawEllipse({ ...s(0.96, 0.5), xScale: w * 0.025, yScale: h * 0.12, borderColor: GREY, borderWidth: 0.8 })
+  }
 }
 
 /**
  * Crée dans Odoo Sign le modèle (PDF + zones) et la demande de signature :
- * 1) le personnel (rôle « Employee ») complète l'état des lieux et signe,
+ * 1) le personnel (rôle « Employee ») complète permis, vérifications, kilométrage et signe,
  * 2) le client (rôle « Customer ») signe ensuite, sur la tablette.
  * Renvoie l'id de la demande et le lien de signature du client.
  */
@@ -164,18 +293,18 @@ export async function createSignRequest(env: Env, args: {
   const roles = await execute<{ id: number; name: string }[]>(env, 'sign.item.role', 'search_read', [[['name', 'in', ['Customer', 'Employee']]]], { fields: ['name'] })
   const roleId = (name: Field['role']) => roles.find((r) => r.name === name)!.id
 
-  await execute(env, 'sign.item', 'create', [fields.map((f) => ({
+  await execute(env, 'sign.item', 'create', [fields.map((fl) => ({
     template_id: templateId,
     document_id: documentId,
-    type_id: typeId(f.kind),
-    responsible_id: roleId(f.role),
-    name: f.name,
-    required: true,
-    page: 1,
-    posX: f.x / W,
-    posY: f.y / H,
-    width: f.w / W,
-    height: f.h / H,
+    type_id: typeId(fl.kind),
+    responsible_id: roleId(fl.role),
+    name: fl.name,
+    required: fl.required,
+    page: fl.page,
+    posX: fl.x / W,
+    posY: fl.y / H,
+    width: fl.w / W,
+    height: fl.h / H,
     alignment: 'left',
   }))])
 
