@@ -191,6 +191,7 @@
      },
      "data": {
       "type": "scorecard",
+      "chartId": "leon-fig-1",
       "title": {
        "text": "Réservations",
        "bold": true,
@@ -221,6 +222,7 @@
      },
      "data": {
       "type": "scorecard",
+      "chartId": "leon-fig-2",
       "title": {
        "text": "Chiffre d'affaires HT",
        "bold": true,
@@ -251,6 +253,7 @@
      },
      "data": {
       "type": "scorecard",
+      "chartId": "leon-fig-3",
       "title": {
        "text": "Panier moyen HT",
        "bold": true,
@@ -281,6 +284,7 @@
      },
      "data": {
       "type": "scorecard",
+      "chartId": "leon-fig-4",
       "title": {
        "text": "Factures impayées",
        "bold": true,
@@ -304,6 +308,7 @@
      },
      "data": {
       "type": "scorecard",
+      "chartId": "leon-fig-5",
       "title": {
        "text": "En location maintenant",
        "bold": true,
@@ -327,6 +332,7 @@
      },
      "data": {
       "type": "scorecard",
+      "chartId": "leon-fig-6",
       "title": {
        "text": "Retraits à venir",
        "bold": true,
@@ -350,6 +356,7 @@
      },
      "data": {
       "type": "scorecard",
+      "chartId": "leon-fig-7",
       "title": {
        "text": "Documents à vérifier",
        "bold": true,
@@ -373,6 +380,7 @@
      },
      "data": {
       "type": "scorecard",
+      "chartId": "leon-fig-8",
       "title": {
        "text": "Véhicules disponibles",
        "bold": true,

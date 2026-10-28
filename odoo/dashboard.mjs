@@ -78,7 +78,7 @@ for (const [i, [name, action]] of sub.entries()) menus[name] = await ensure('ir.
 log('application « Pilotage LEON »', root)
 
 // ─── 3. Tableau de bord (feuille de calcul Odoo) ───
-const group = await ensure('spreadsheet.dashboard.group', [['name', '=', 'LEON Location PRO']], { name: 'LEON Location PRO', sequence: 0 })
+const group = await ensure('spreadsheet.dashboard.group', [['name', '=', 'LEON Location PRO']], { name: 'LEON Location PRO', sequence: 99 })
 const dispo = (await call('fleet.vehicle.state', 'search', [[['name', '=', 'Disponible']]]))[0]
 const PERIOD = 'b1e7a0c2-0000-4000-8000-000000000001'
 const date = (chain, offset = 0) => ({ [PERIOD]: { chain, type: 'date', offset } })
@@ -147,10 +147,10 @@ for (let i = 1; i <= 8; i++) {
 
 let figId = 0
 const fid = () => `leon-fig-${++figId}`
-const card = (title, keyValue, baseline, x, y, background = '#EFF6FF') => ({
-  id: fid(), tag: 'chart', width: 236, height: 104, col: 0, row: 0, offset: { x, y },
+const card = (title, keyValue, baseline, x, y, background = '#EFF6FF', id = fid()) => ({
+  id, tag: 'chart', width: 236, height: 104, col: 0, row: 0, offset: { x, y },
   data: {
-    type: 'scorecard', title: { text: title, bold: true, color: '#434343' }, keyValue, background, humanize: false,
+    type: 'scorecard', chartId: id, title: { text: title, bold: true, color: '#434343' }, keyValue, background, humanize: false,
     ...(baseline ? { baseline, baselineMode: 'percentage', baselineDescr: { text: 'vs période précédente' }, baselineColorUp: '#00A04A', baselineColorDown: '#DC6965' } : {}),
   },
 })
@@ -238,7 +238,5 @@ const dashboard = await ensure('spreadsheet.dashboard', [['name', '=', 'Pilotage
 await call('ir.actions.client', 'write', [[clientAction], { params: { dashboard_id: dashboard } }])
 log('tableau de bord « Pilotage »', dashboard)
 
-// ─── 4. Page d'accueil de l'utilisateur ───
-const users = await call('res.users', 'search', [[['share', '=', false]]])
-await call('res.users', 'write', [users, { action_id: clientAction }])
-log('page d\'accueil des utilisateurs internes →', 'Pilotage LEON')
+// ─── 4. Page d'accueil ───
+// Volontairement non modifiée : on ne la redéfinit qu'après validation visuelle du tableau de bord.
